@@ -1,0 +1,27 @@
+image: gitlab.task4work.info:4567/common-libs/jaravel
+
+before_script:
+  - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.task4work.info/".insteadOf "git@gitlab.task4work.info:"
+  - composer install
+
+cache:
+  paths:
+    - vendor
+    - .ecs_cache
+
+stages:
+  - lint
+  - test
+
+lint:
+  stage: lint
+  script:
+    - vendor/bin/ecs check --config=ecs.php
+
+test:
+  stage: test
+  script:
+    - php -d pcov.directory='.' -d memory_limit=2G vendor/bin/phpunit
+      --stop-on-failure
+      --colors=never
+      --coverage-text

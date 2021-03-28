@@ -1,0 +1,40 @@
+{
+  "name": "umbrellio/jaravel",
+  "description": "",
+  "type": "library",
+  "require": {
+    "php": "^7.4|^8.0",
+    "laravel/framework": "^7.0|^8.0",
+    "guzzlehttp/guzzle": "^7.0|^6.0",
+    "jukylin/jaeger-php": "^2.1"
+  },
+  "require-dev": {
+    "umbrellio/code-style-php": "^1.2",
+    "orchestra/testbench": "^6.17"
+  },
+  "authors": [
+    {
+      "name": "vetal",
+      "email": "vetal@umbrellio.biz"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "autoload": {
+    "psr-4": {
+      "Umbrellio\\Jaravel\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Umbrellio\\Jaravel\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Umbrellio\\Jaravel\\JaravelServiceProvider"
+      ]
+    }
+  }
+}
