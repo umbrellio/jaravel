@@ -1,5 +1,5 @@
 # Jaravel
-###### Library that allows easy integrate your Laravel application with Jaeger.
+###### Library that allows easy integrate your Laravel application with Jaeger (OpenTracing)..
 ## Installation
 
 Installation can be done with composer

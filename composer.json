@@ -1,6 +1,6 @@
 {
   "name": "umbrellio/jaravel",
-  "description": "",
+  "description": "Library for integration Laravel and Jaeger.",
   "type": "library",
   "require": {
     "php": "^7.4|^8.0",
@@ -10,7 +10,8 @@
   },
   "require-dev": {
     "umbrellio/code-style-php": "^1.2",
-    "orchestra/testbench": "^6.17"
+    "orchestra/testbench": "^6.17",
+    "php-coveralls/php-coveralls": "^2.4"
   },
   "authors": [
     {
