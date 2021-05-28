@@ -8,7 +8,6 @@ on:
   
 env:
   cache_key: cache-v1
-  php_extensions: pcov
 
 jobs:	
   lint:
@@ -24,22 +23,10 @@ jobs:
     steps:	
       - name: 'Checkout'
         uses: actions/checkout@v2
-#      - name: 'Setup cache environment'
-#        id: cache-lint
-#        uses: shivammathur/cache-extensions@v1
-#        with:
-#          php-version: '${{ matrix.php_versions }}'
-#          key: '${{ env.cache_key }}'
-#      - name: 'Cache extensions'
-#        uses: actions/cache@v1
-#        with:
-#          path: '${{ steps.cache-lint.outputs.dir }}'
-#          key: '${{ steps.cache-lint.outputs.key }}'
       - name: 'Setup PHP'
         uses: shivammathur/setup-php@v2	
         with:	
           php-version: ${{ matrix.php_versions }}
-          tools: composer
       - name: 'Install PHP dependencies with Composer'
         run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
       - name: 'Linting PHP source files'
@@ -59,24 +46,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-#      - name: 'Setup cache environment'
-#        id: cache-test
-#        uses: shivammathur/cache-extensions@v1
-#        with:
-#          php-version: ${{ matrix.php_versions }}
-#          extensions: ${{ env.php_extensions }}
-#          key: '${{ env.cache_key }}'
-#      - name: 'Cache extensions'
-#        uses: actions/cache@v1
-#        with:
-#          path: '${{ steps.cache-test.outputs.dir }}'
-#          key: '${{ steps.cache-test.outputs.key }}'
-#          restore-keys: '${{ steps.cache-env.outputs.key }}'
       - name: 'Setup PHP'
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php_versions }}
-          tools: phpunit
       - name: 'Install PHP dependencies with Composer'
         run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
       - name: 'Run Unit Tests with PHPUnit'
