@@ -176,3 +176,23 @@ $tracer->flush();
 
 If you need to retrieve current trace id, you can use: 
 `Umbrellio\Jaravel\Services\Span\ActiveSpanTraceIdRetriever::retrieve()`
+
+## License
+
+Released under MIT License.
+
+## Authors
+
+Created by Vitaliy Lazeev.
+
+## Contributing
+
+- Fork it ( https://github.com/umbrellio/jaravel )
+- Create your feature branch (`git checkout -b feature/my-new-feature`)
+- Commit your changes (`git commit -am 'Add some feature'`)
+- Push to the branch (`git push origin feature/my-new-feature`)
+- Create new Pull Request
+
+<a href="https://github.com/umbrellio/">
+<img style="float: left;" src="https://umbrellio.github.io/Umbrellio/supported_by_umbrellio.svg" alt="Supported by Umbrellio" width="439" height="72">
+</a>
