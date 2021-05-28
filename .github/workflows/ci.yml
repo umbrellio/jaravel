@@ -53,7 +53,6 @@ jobs:
           - ubuntu-20.04
         php_versions: 
           - '7.4'
-          - '8.0'
     runs-on: '${{ matrix.operating_system }}'
     name: 'Test / PHP ${{ matrix.php_versions }}'
     needs:
