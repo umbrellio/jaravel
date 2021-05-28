@@ -5,8 +5,8 @@ on:
   pull_request:
   
 env:
-  COVERAGE: '1'
   cache_key: cache-v1
+  php_extensions: intl, pcov
 
 jobs:	
   lint:
@@ -22,12 +22,6 @@ jobs:
     steps:	
       - name: 'Checkout'
         uses: actions/checkout@v2
-      - name: 'Setup cache environment'
-        id: cache-env
-        uses: shivammathur/cache-extensions@v1
-        with:
-          php-version: '${{ matrix.php_versions }}'
-          key: '${{ env.cache_key }}'
       - name: 'Setup cache environment'
         uses: actions/cache@v1
         with:
@@ -63,7 +57,6 @@ jobs:
         uses: shivammathur/cache-extensions@v1
         with:
           php-version: ${{ matrix.php_versions }}
-          extensions: ${{ env.php_extensions }}
           key: '${{ env.cache_key }}'
       - name: 'Cache extensions'
         uses: actions/cache@v1
