@@ -8,7 +8,7 @@ on:
   
 env:
   cache_key: cache-v1
-  php_extensions: intl, pcov
+  php_extensions: pcov
 
 jobs:	
   lint:
@@ -61,19 +61,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: 'Setup cache environment'
-        id: cache-test
-        uses: shivammathur/cache-extensions@v1
-        with:
-          php-version: ${{ matrix.php_versions }}
-          extensions: ${{ env.php_extensions }}
-          key: '${{ env.cache_key }}'
-      - name: 'Cache extensions'
-        uses: actions/cache@v1
-        with:
-          path: '${{ steps.cache-test.outputs.dir }}'
-          key: '${{ steps.cache-test.outputs.key }}'
-          restore-keys: '${{ steps.cache-env.outputs.key }}'
+#      - name: 'Setup cache environment'
+#        id: cache-test
+#        uses: shivammathur/cache-extensions@v1
+#        with:
+#          php-version: ${{ matrix.php_versions }}
+#          extensions: ${{ env.php_extensions }}
+#          key: '${{ env.cache_key }}'
+#      - name: 'Cache extensions'
+#        uses: actions/cache@v1
+#        with:
+#          path: '${{ steps.cache-test.outputs.dir }}'
+#          key: '${{ steps.cache-test.outputs.key }}'
+#          restore-keys: '${{ steps.cache-env.outputs.key }}'
       - name: 'Setup PHP'
         uses: shivammathur/setup-php@v2
         with:
