@@ -76,12 +76,6 @@ jobs:
 #          restore-keys: '${{ steps.cache-env.outputs.key }}'
       - name: 'Setup PHP'
         uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php_versions }}
-          extensions: ${{ env.php_extensions }}
-          ini-values: 'pcov.directory=src, date.timezone=UTC, upload_max_filesize=20M, post_max_size=20M, memory_limit=512M, short_open_tag=Off'
-          coverage: pcov
-          tools: 'phpunit'
       - name: 'Install PHP dependencies with Composer'
         run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
       - name: 'Run Unit Tests with PHPUnit'
@@ -90,7 +84,6 @@ jobs:
           ./vendor/bin/phpunit \
               --verbose \
               --stderr \
-              --exclude-group ${{ matrix.exclude_group }} \
               --coverage-clover build/logs/clover.xml \
               --coverage-text
       - name: Upload coverage results to Coveralls
