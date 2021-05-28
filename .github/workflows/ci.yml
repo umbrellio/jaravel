@@ -40,7 +40,6 @@ jobs:
         with:	
           php-version: ${{ matrix.php_versions }}
           tools: composer
-          coverage: none
       - name: 'Install PHP dependencies with Composer'
         run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
       - name: 'Linting PHP source files'
@@ -75,6 +74,9 @@ jobs:
 #          restore-keys: '${{ steps.cache-env.outputs.key }}'
       - name: 'Setup PHP'
         uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_versions }}
+          tools: phpunit
       - name: 'Install PHP dependencies with Composer'
         run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
       - name: 'Run Unit Tests with PHPUnit'
