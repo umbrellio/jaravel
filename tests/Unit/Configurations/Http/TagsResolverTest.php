@@ -1,13 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Umbrellio\Jaravel\Tests\Unit\Configurations\Http;
 
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Umbrellio\Jaravel\Configurations\Http\SpanNameResolver;
-use Umbrellio\Jaravel\Configurations\Http\TagsResolver;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Response;
+use Umbrellio\Jaravel\Configurations\Http\TagsResolver;
 
 class TagsResolverTest extends TestCase
 {

@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Umbrellio\Jaravel\Tests\Unit\Configurations\Job;
 
-use Umbrellio\Jaravel\Configurations\Job\SpanNameResolver;
 use PHPUnit\Framework\TestCase;
+use Umbrellio\Jaravel\Configurations\Job\SpanNameResolver;
 use Umbrellio\Jaravel\Tests\Utils\TestJob;
 
 class SpanNameResolverTest extends TestCase

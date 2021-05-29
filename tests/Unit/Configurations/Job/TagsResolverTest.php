@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Umbrellio\Jaravel\Tests\Unit\Configurations\Job;
 
 use Illuminate\Contracts\Queue\Job;
-use Umbrellio\Jaravel\Configurations\Job\TagsResolver;
 use PHPUnit\Framework\TestCase;
+use Umbrellio\Jaravel\Configurations\Job\TagsResolver;
 use Umbrellio\Jaravel\Tests\Utils\TestJob;
 
 class TagsResolverTest extends TestCase
@@ -32,7 +33,6 @@ class TagsResolverTest extends TestCase
         $stubJob
             ->method('attempts')
             ->willReturn(1);
-
 
         $result = $resolver($realJob, $stubJob);
         $this->assertSame([
