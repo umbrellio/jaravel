@@ -1,5 +1,6 @@
 {
   "name": "umbrellio/jaravel",
+  "license": "MIT",
   "description": "Library for integration Laravel and Jaeger.",
   "type": "library",
   "require": {
