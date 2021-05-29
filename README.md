@@ -1,5 +1,11 @@
 # Jaravel
-###### Library that allows easy integrate your Laravel application with Jaeger.
+
+[![Github Status](https://github.com/umbrellio/jaravel/workflows/CI/badge.svg)](https://github.com/umbrellio/jaravel/actions)
+[![Latest Stable Version](https://poser.pugx.org/umbrellio/jaravel/v)](//packagist.org/packages/umbrellio/jaravel)
+[![Coverage Status](https://coveralls.io/repos/github/umbrellio/jaravel/badge.svg?branch=master)](https://coveralls.io/github/umbrellio/jaravel?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/umbrellio/jaravel/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/umbrellio/jaravel/?branch=master)
+
+###### Library that allows easy integrate your Laravel application with Jaeger (OpenTracing).
 ## Installation
 
 Installation can be done with composer

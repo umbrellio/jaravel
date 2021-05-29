@@ -13,8 +13,5 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters->set(Option::CACHE_DIRECTORY, '.ecs_cache');
     $parameters->set(Option::FILE_EXTENSIONS, ['php']);
 
-    $parameters->set(Option::PATHS, [
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
-    ]);
+    $parameters->set(Option::PATHS, [__DIR__ . '/src', __DIR__ . '/tests']);
 };
