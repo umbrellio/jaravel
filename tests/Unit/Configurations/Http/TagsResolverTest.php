@@ -1,0 +1,30 @@
+<?php
+declare(strict_types=1);
+
+namespace Umbrellio\Jaravel\Tests\Unit\Configurations\Http;
+
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Umbrellio\Jaravel\Configurations\Http\SpanNameResolver;
+use Umbrellio\Jaravel\Configurations\Http\TagsResolver;
+use PHPUnit\Framework\TestCase;
+
+class TagsResolverTest extends TestCase
+{
+    public function testResolve(): void
+    {
+        $resolver = new TagsResolver();
+        $request = Request::create('https://test.com/api');
+        $response = new Response();
+
+        $result = $resolver($request, $response);
+        $this->assertSame([
+            'type' => 'http',
+            'request_host' => 'test.com',
+            'request_path' => 'api',
+            'request_method' => 'GET',
+            'response_status' => 200,
+            'error' => false,
+        ], $result);
+    }
+}

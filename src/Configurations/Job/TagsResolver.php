@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\Job;
 
 class TagsResolver
 {
-    public function __invoke($realJob, ?Job $job)
+    public function __invoke($realJob, ?Job $job = null)
     {
         return [
             'type' => 'job',
