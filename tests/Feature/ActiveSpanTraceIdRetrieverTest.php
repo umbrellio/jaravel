@@ -34,4 +34,14 @@ class ActiveSpanTraceIdRetrieverTest extends JaravelTestCase
 
         $this->assertSame($retrievedTrace, $traceId);
     }
+
+    public function testNullIfNoActiveSpan()
+    {
+        $tracer = $this->app->make(Tracer::class);
+        $retriever = new ActiveSpanTraceIdRetriever($tracer);
+
+        $retrievedTrace = $retriever->retrieve();
+
+        $this->assertNull($retrievedTrace);
+    }
 }
