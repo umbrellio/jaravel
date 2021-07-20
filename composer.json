@@ -4,10 +4,10 @@
   "description": "Library for integration Laravel and Jaeger.",
   "type": "library",
   "require": {
-    "php": "^7.4",
+    "php": "^7.4|^8.0",
     "laravel/framework": "^7.0|^8.0",
     "guzzlehttp/guzzle": "^7.0|^6.0",
-    "jukylin/jaeger-php": "^2.1"
+    "jukylin/jaeger-php": "dev-dev_v3"
   },
   "require-dev": {
     "umbrellio/code-style-php": "^1.2",
