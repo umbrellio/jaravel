@@ -15,7 +15,7 @@ use Umbrellio\Jaravel\Tests\JaravelTestCase;
 
 class GuzzleTracingTest extends JaravelTestCase
 {
-    public function testJobHandledWithInjection()
+    public function testJobHandledWithInjection(): void
     {
         $mock = new MockHandler([new Response(200)]);
 
@@ -48,7 +48,7 @@ class GuzzleTracingTest extends JaravelTestCase
         $this->assertSame(
             $serviceSpan->getContext()
                 ->buildString(),
-            $guzzleSpan->references[0]->getContext()->buildString()
+            $guzzleSpan->references[0]->getSpanContext()->buildString()
         );
     }
 }
