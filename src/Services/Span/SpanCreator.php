@@ -40,7 +40,7 @@ class SpanCreator
         return array_merge(
             $baseOptions,
             $spanContext ? [
-                'references' => Reference::create($referenceType, $spanContext),
+                'references' => new Reference($referenceType, $spanContext),
             ] : []
         );
     }

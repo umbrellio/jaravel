@@ -59,7 +59,6 @@ class JobTracingTest extends JaravelTestCase
         ], $span->tags);
     }
 
-
     public function testJobMiddlewareWithContext()
     {
         $injectionMaker = $this->app->make(JobInjectionMaker::class);
@@ -91,7 +90,8 @@ class JobTracingTest extends JaravelTestCase
         $this->assertSame(
             $serviceSpan->getContext()
                 ->buildString(),
-            $jobSpan->references[0]->getContext()->buildString()
+            $jobSpan->references[0]->getSpanContext()->buildString()
         );
     }
+
 }
