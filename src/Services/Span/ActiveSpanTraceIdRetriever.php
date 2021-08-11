@@ -27,7 +27,6 @@ class ActiveSpanTraceIdRetriever
             return null;
         }
 
-        return $activeSpan->getContext()
-            ->traceIdLowToString();
+        return $activeSpan->getContext()->getTraceId();
     }
 }

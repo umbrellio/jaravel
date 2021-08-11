@@ -7,7 +7,7 @@
     "php": "^7.4|^8.0",
     "laravel/framework": "^7.0|^8.0",
     "guzzlehttp/guzzle": "^6.0|^7.0",
-    "jukylin/jaeger-php": "dev-dev_v3"
+    "jonahgeorge/jaeger-client-php": "^1.2"
   },
   "require-dev": {
     "umbrellio/code-style-php": "^1.2",

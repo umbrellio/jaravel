@@ -39,7 +39,6 @@ class JobTracingTest extends JaravelTestCase
         );
     }
 
-
     public function testJobMiddlewareWithoutContext()
     {
         $job = new TestJob();
@@ -47,7 +46,7 @@ class JobTracingTest extends JaravelTestCase
 
         $middleware->handle($job, fn () => true);
 
-        $spans = $this->reporter->reportedSpans;
+        $spans = $this->reporter->getSpans();
 
         $this->assertCount(1, $spans);
         $span = $spans[0];
@@ -77,7 +76,7 @@ class JobTracingTest extends JaravelTestCase
 
         $middleware->handle($job, fn () => true);
 
-        $spans = $this->reporter->reportedSpans;
+        $spans = $this->reporter->getSpans();
 
         $this->assertCount(2, $spans);
 
@@ -88,9 +87,8 @@ class JobTracingTest extends JaravelTestCase
         $this->assertSame('Job: Umbrellio\Jaravel\Tests\Utils\TestJob', $jobSpan->getOperationName());
         $this->assertCount(1, $jobSpan->references);
         $this->assertSame(
-            $serviceSpan->getContext()
-                ->buildString(),
-            $jobSpan->references[0]->getSpanContext()->buildString()
+            $serviceSpan->getContext()->getBaggage(),
+            $jobSpan->references[0]->getSpanContext()->getBaggage()
         );
     }
 

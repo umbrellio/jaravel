@@ -11,7 +11,9 @@ use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\Facades\Config as ConfigRepository;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Jaeger;
 use Jaeger\Config;
+use OpenTracing\GlobalTracer;
 use OpenTracing\Tracer;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandFinishedListener;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandStartedListener;
@@ -57,16 +59,26 @@ class JaravelServiceProvider extends ServiceProvider
             return;
         }
 
-        $config = Config::getInstance();
-
-        if (!ConfigRepository::get('jaravel.enabled', false)) {
-            $config->setDisabled(true);
-        }
-
-        $tracer = $config->initTracer(
+        $config = new Config(
+            [
+                'sampler' => [
+                    'type' => Jaeger\SAMPLER_TYPE_CONST,
+                    // TODO: здесь пока хз
+                    'param' => ConfigRepository::get('jaravel.enabled', false),
+                ],
+                // TODO: нужно проверить что это дает
+                'logging' => ConfigRepository::get('jaravel.logs_enabled', true),
+                "local_agent" => [
+                    "reporting_host" => ConfigRepository::get('jaravel.agent_host', '127.0.0.1'),
+                    "reporting_port" => ConfigRepository::get('jaravel.agent_port', 6831),
+                ],
+            ],
             ConfigRepository::get('jaravel.tracer_name', 'application'),
-            ConfigRepository::get('jaravel.agent_host_port', '127.0.0.1:6831')
         );
+
+        $config->initializeTracer();
+
+        $tracer = GlobalTracer::get();
 
         $this->app->instance(Tracer::class, $tracer);
     }

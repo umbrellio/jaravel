@@ -11,34 +11,41 @@ use Umbrellio\Jaravel\Tests\JaravelTestCase;
 
 class ActiveSpanTraceIdRetrieverTest extends JaravelTestCase
 {
+    private Tracer $tracer;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->tracer = $this->app->make(Tracer::class);
+    }
+
     public function testLogsAddedWhenEnabledOption()
     {
-        $tracer = $this->app->make(Tracer::class);
         $spanCreator = $this->app->make(SpanCreator::class);
-        $retriever = new ActiveSpanTraceIdRetriever($tracer);
+        $retriever = new ActiveSpanTraceIdRetriever($this->tracer);
 
         $spanCreator->create('Call MyService');
 
-        $retrievedTrace = $retriever->retrieve();
+        $retrievedTraceId = $retriever->retrieve();
 
-        optional($tracer->getScopeManager()->getActive())
+        optional($this->tracer->getScopeManager()->getActive())
             ->close();
-        $tracer->flush();
 
-        $spans = $this->reporter->reportedSpans;
+        $this->tracer->flush();
+
+        $spans = $this->reporter->getSpans();
 
         $this->assertCount(1, $spans);
         $span = $spans[0];
-        $traceId = $span->getContext()
-            ->traceIdLowToString();
+        $traceId = $span->getContext()->getTraceId();
 
-        $this->assertSame($retrievedTrace, $traceId);
+        $this->assertSame($retrievedTraceId, $traceId);
     }
 
     public function testNullIfNoActiveSpan()
     {
-        $tracer = $this->app->make(Tracer::class);
-        $retriever = new ActiveSpanTraceIdRetriever($tracer);
+        $retriever = new ActiveSpanTraceIdRetriever($this->tracer);
 
         $retrievedTrace = $retriever->retrieve();
 

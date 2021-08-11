@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Umbrellio\Jaravel\Tests\Utils;
 
-use Jaeger\Jaeger;
-use Jaeger\Reporter\Reporter;
+use Jaeger\Reporter\ReporterInterface;
+use Jaeger\Span;
 
-class SpyReporter implements Reporter
+class SpyReporter implements ReporterInterface
 {
     public array $reportedSpans = [];
-    public function report(Jaeger $jaeger)
+
+    public function reportSpan(Span $span)
     {
-        $this->reportedSpans = array_merge($this->reportedSpans, $jaeger->spans);
+        $this->reportedSpans = array_merge($this->reportedSpans, [$span]);
     }
 
     public function close()

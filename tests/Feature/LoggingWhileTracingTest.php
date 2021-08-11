@@ -23,15 +23,15 @@ class LoggingWhileTracingTest extends JaravelTestCase
             ->close();
         $tracer->flush();
 
-        $spans = $this->reporter->reportedSpans;
+        $spans = $this->reporter->getSpans();
         $this->assertCount(1, $spans);
         $span = $spans[0];
 
-        $this->assertCount(1, $span->logs);
+        $this->assertCount(1, $span->getLogs());
         $this->assertSame([
             'message' => 'test log',
             'context' => ['context'],
             'level' => 'info',
-        ], $span->logs[0]['fields']);
+        ], $span->getLogs()[0]['fields']);
     }
 }

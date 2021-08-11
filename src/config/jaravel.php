@@ -10,6 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Umbrellio\Jaravel\Configurations;
 
 return [
+
+
+
+
+
     /**
      * Enable Jaravel tracing or not. If not, noop tracer will be used.
      */
@@ -18,6 +23,12 @@ return [
      * Name of your service, that will be shown in Jaeger panel
      */
     'tracer_name' => env('JARAVEL_TRACER_NAME', 'application'),
+
+
+    'agent_host' => env('JARAVEL_AGENT_HOST', '127.0.0.1'),
+
+    'agent_port' => env('JARAVEL_AGENT_PORT', 6831),
+
     /**
      * Host and port (for example: '127.0.0.1:6831') for Jaeger agent
      */
