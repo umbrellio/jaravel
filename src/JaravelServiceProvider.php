@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Jaeger;
 use Jaeger\Config;
+use Jaeger\Reporter\InMemoryReporter;
+use Jaeger\Sampler\ConstSampler;
+use Jaeger\ScopeManager;
 use OpenTracing\GlobalTracer;
 use OpenTracing\Tracer;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandFinishedListener;
@@ -30,15 +33,34 @@ class JaravelServiceProvider extends ServiceProvider
             $config => base_path('config/jaravel.php'),
         ], 'config');
 
-        $this->configureTracer();
-
         if (!ConfigRepository::get('jaravel.enabled', false)) {
+            $this->configureFakeTracer();
+
             return;
         }
+
+        $this->configureTracer();
 
         $this->listenLogs();
         $this->listenConsoleEvents();
         $this->extendJobsDispatcher();
+    }
+
+    public function configureFakeTracer(): void
+    {
+        $tracer = new class(
+            'fake-tracer',
+            new InMemoryReporter(),
+            new ConstSampler(),
+            new ScopeManager()) extends \Jaeger\Tracer {
+
+            protected function getHostName()
+            {
+                return null;
+            }
+        };
+
+        $this->app->instance(Tracer::class, $tracer);
     }
 
     public function extendJobsDispatcher(): void

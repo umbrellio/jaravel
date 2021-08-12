@@ -38,5 +38,10 @@
         "Umbrellio\\Jaravel\\JaravelServiceProvider"
       ]
     }
+  },
+  "scripts": {
+    "lint": [
+      "ecs check --config ecs.php --fix"
+    ]
   }
 }
