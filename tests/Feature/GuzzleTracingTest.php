@@ -35,7 +35,7 @@ class GuzzleTracingTest extends JaravelTestCase
             ->close();
         $tracer->flush();
 
-        $spans = $this->reporter->getSpans();
+        $spans = array_reverse($this->reporter->getSpans());
 
         $this->assertCount(2, $spans);
 
@@ -44,11 +44,9 @@ class GuzzleTracingTest extends JaravelTestCase
 
         $this->assertSame('Call MyService', $serviceSpan->getOperationName());
         $this->assertSame('request test.com', $guzzleSpan->getOperationName());
-//        $this->assertCount(1, $guzzleSpan->references);
-//        $this->assertSame(
-//            $serviceSpan->getContext()
-//                ->buildString(),
-//            $guzzleSpan->references[0]->getSpanContext()->buildString()
-//        );
+
+        $this->assertSame(
+            $serviceSpan->getContext()->getSpanId(), $guzzleSpan->getContext()->getParentId()
+        );
     }
 }

@@ -46,14 +46,13 @@ abstract class JaravelTestCase extends TestCase
             'trace_id_header' => 'X-Trace-Id',
             'logs_enabled' => true,
 
-            'custom_tracer_callable' => function () {
-                $tracer = new Tracer('test-tracer', $this->reporter, new ConstSampler(), new ScopeManager());
-
-                // TODO: Шо это?
-                //$tracer->setPropagator(new JaegerPropagator());
-
-                return $tracer;
-            },
+            'custom_tracer_callable' => fn () => new Tracer(
+                'test-tracer',
+                $this->reporter,
+                new ConstSampler(),
+                true,
+                null,
+                new ScopeManager()),
 
             'http' => [
                 'span_name' => fn (Request $request) => 'App: ' . $request->path(),
