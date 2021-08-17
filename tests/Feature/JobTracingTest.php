@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Umbrellio\Jaravel\Tests\Feature;
 
 use Illuminate\Support\Facades\Bus;
+use Jaeger\Thrift\Agent\Zipkin\BinaryAnnotation;
 use OpenTracing\Formats;
 use OpenTracing\Tracer;
 use Umbrellio\Jaravel\Middleware\JobTracingMiddleware;
@@ -48,10 +49,15 @@ class JobTracingTest extends JaravelTestCase
         $span = $spans[0];
 
         $this->assertSame('Job: Umbrellio\Jaravel\Tests\Utils\TestJob', $span->getOperationName());
-        $this->assertSame([
+
+        $tags = collect($span->getTags())->mapWithKeys(fn (BinaryAnnotation $tag) => [$tag->key => $tag->value]);
+
+        $expectedTags = [
             'type' => 'job',
             'job_class' => 'Umbrellio\Jaravel\Tests\Utils\TestJob',
-        ], $span->tags);
+        ];
+
+        $this->assertSame($expectedTags, $tags->intersect($expectedTags)->toArray());
     }
 
     public function testJobMiddlewareWithContext()
@@ -66,13 +72,13 @@ class JobTracingTest extends JaravelTestCase
         $spanCreator->create('Call MyService');
         $job = $injectionMaker->injectParentSpanToCommand($job);
 
+        $middleware->handle($job, fn () => true);
+
         optional($tracer->getScopeManager()->getActive())
             ->close();
         $tracer->flush();
 
-        $middleware->handle($job, fn () => true);
-
-        $spans = $this->reporter->getSpans();
+        $spans = array_reverse($this->reporter->getSpans());
 
         $this->assertCount(2, $spans);
 
@@ -82,12 +88,9 @@ class JobTracingTest extends JaravelTestCase
         $this->assertSame('Call MyService', $serviceSpan->getOperationName());
         $this->assertSame('Job: Umbrellio\Jaravel\Tests\Utils\TestJob', $jobSpan->getOperationName());
 
-
-//        $tracingContextField = JobTracingMiddleware::JOB_TRACING_CONTEXT_FIELD;
-//        $context = $tracer->extract(Formats\TEXT_MAP, $job->{$tracingContextField});
-//        $this->assertSame(
-//            $serviceSpan->getContext()->getSpanId(), $jobSpan->getContext()->getParentId()
-//        );
+        $this->assertSame(
+            $serviceSpan->getContext()->getSpanId(), $jobSpan->getContext()->getParentId()
+        );
     }
 
 }
