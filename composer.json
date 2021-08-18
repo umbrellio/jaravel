@@ -4,7 +4,7 @@
   "description": "Library for integration Laravel and Jaeger.",
   "type": "library",
   "require": {
-    "php": "^7.4|^8.0",
+    "php": "^8.0",
     "laravel/framework": "^7.0|^8.0",
     "guzzlehttp/guzzle": "^6.0|^7.0",
     "jonahgeorge/jaeger-client-php": "^1.2"
