@@ -52,6 +52,8 @@ class JaravelServiceProvider extends ServiceProvider
             'fake-tracer',
             new InMemoryReporter(),
             new ConstSampler(),
+            true,
+            null,
             new ScopeManager()) extends \Jaeger\Tracer {
 
             protected function getHostName()
