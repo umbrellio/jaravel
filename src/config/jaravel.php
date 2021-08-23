@@ -11,19 +11,15 @@ use Umbrellio\Jaravel\Configurations;
 
 return [
 
-
-
-
-
     /**
      * Enable Jaravel tracing or not. If not, noop tracer will be used.
      */
     'enabled' => env('JARAVEL_ENABLED', true),
+
     /**
      * Name of your service, that will be shown in Jaeger panel
      */
     'tracer_name' => env('JARAVEL_TRACER_NAME', 'application'),
-
 
     'agent_host' => env('JARAVEL_AGENT_HOST', '127.0.0.1'),
 
@@ -33,10 +29,12 @@ return [
      * Host and port (for example: '127.0.0.1:6831') for Jaeger agent
      */
     'agent_host_port' => env('JARAVEL_AGENT_HOST_PORT', '127.0.0.1:6831'),
+
     /**
      * Header name for trace`s id, that will be responded by TraceIdHttpHeaderMiddleware
      */
     'trace_id_header' => env('JARAVEL_TRACE_ID_HEADER', 'X-Trace-Id'),
+
     /**
      * Every log in your application will be added to active span, if enabled
      */
