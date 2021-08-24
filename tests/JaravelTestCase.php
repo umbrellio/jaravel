@@ -42,7 +42,8 @@ abstract class JaravelTestCase extends TestCase
         return [
             'enabled' => true,
             'tracer_name' => 'application',
-            'agent_host_port' => '127.0.0.1:6831',
+            'agent_host' => '127.0.0.1:6831',
+            'agent_port' => 6831,
             'trace_id_header' => 'X-Trace-Id',
             'logs_enabled' => true,
 
