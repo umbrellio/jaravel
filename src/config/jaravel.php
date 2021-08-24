@@ -26,11 +26,6 @@ return [
     'agent_port' => env('JARAVEL_AGENT_PORT', 6831),
 
     /**
-     * Host and port (for example: '127.0.0.1:6831') for Jaeger agent
-     */
-    'agent_host_port' => env('JARAVEL_AGENT_HOST_PORT', '127.0.0.1:6831'),
-
-    /**
      * Header name for trace`s id, that will be responded by TraceIdHttpHeaderMiddleware
      */
     'trace_id_header' => env('JARAVEL_TRACE_ID_HEADER', 'X-Trace-Id'),
