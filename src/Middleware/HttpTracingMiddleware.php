@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Umbrellio\Jaravel\Middleware;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use OpenTracing\Reference;
 use OpenTracing\Tracer;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,6 +39,8 @@ class HttpTracingMiddleware
         if (!$this->requestGuard->allowRequest($request)) {
             return $next($request);
         }
+
+        Log::channel('jaravel')->info('http: ' . json_encode(iterator_to_array($request->headers)));
 
         $this->spanCreator->create(
             Caller::call(Config::get('jaravel.http.span_name'), [$request]),

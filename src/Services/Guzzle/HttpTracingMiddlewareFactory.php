@@ -6,6 +6,7 @@ namespace Umbrellio\Jaravel\Services\Guzzle;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use OpenTracing\Formats;
 use OpenTracing\Tracer;
 use Psr\Http\Message\RequestInterface;
@@ -30,6 +31,8 @@ class HttpTracingMiddlewareFactory
                 $tracer->inject($span->getContext(), Formats\TEXT_MAP, $headers);
 
                 SpanTagHelper::setTags($span, Caller::call(Config::get('jaravel.guzzle.tags'), [$request]));
+
+                Log::channel('jaravel')->info('guzzle: ' . json_encode($headers));
 
                 foreach ($headers as $name => $value) {
                     $request = $request->withHeader($name, $value);
