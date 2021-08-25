@@ -98,8 +98,7 @@ class JaravelServiceProvider extends ServiceProvider
                 'trace_id_header' => ConfigRepository::get('jaravel.trace_id_header', 'X-Trace-Id'),
                 'dispatch_mode' => Config::JAEGER_OVER_BINARY_UDP,
             ],
-            ConfigRepository::get('jaravel.tracer_name', 'application'),
-            Log::channel('jaravel'),
+            ConfigRepository::get('jaravel.tracer_name', 'application')
         );
 
         $config->initializeTracer();
