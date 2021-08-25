@@ -46,11 +46,12 @@ class HttpTracingMiddleware
             Reference::CHILD_OF
         );
 
-        Log::channel('jaravel')->info('http: ' . json_encode(iterator_to_array($request->headers)));
+
 
         try {
             Log::channel('jaravel')->info('http_span: ' . $span->getContext()->getSpanId());
             Log::channel('jaravel')->info('http_parent: ' . $span->getContext()->getParentId());
+            Log::channel('jaravel')->info('http: ' . json_encode(iterator_to_array($request->headers)));
         } catch (\Throwable $exception) {
 
         }

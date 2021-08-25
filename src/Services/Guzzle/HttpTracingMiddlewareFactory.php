@@ -32,11 +32,10 @@ class HttpTracingMiddlewareFactory
 
                 SpanTagHelper::setTags($span, Caller::call(Config::get('jaravel.guzzle.tags'), [$request]));
 
-                Log::channel('jaravel')->info('guzzle: ' . json_encode($headers));
-
                 try {
                     Log::channel('jaravel')->info('guzzle_span: ' . $span->getContext()->getSpanId());
                     Log::channel('jaravel')->info('guzzle_parent: ' . $span->getContext()->getParentId());
+                    Log::channel('jaravel')->info('guzzle: ' . json_encode($headers));
                 } catch (\Throwable $exception) {
 
                 }
