@@ -33,6 +33,7 @@ class HttpTracingMiddlewareFactory
                 SpanTagHelper::setTags($span, Caller::call(Config::get('jaravel.guzzle.tags'), [$request]));
 
                 Log::channel('jaravel')->info('guzzle: ' . json_encode($headers));
+                Log::channel('jaravel')->info('guzzle_span: ' . $span->getContext()->getSpanId());
 
                 foreach ($headers as $name => $value) {
                     $request = $request->withHeader($name, $value);
