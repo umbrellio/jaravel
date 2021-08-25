@@ -49,8 +49,9 @@ class HttpTracingMiddleware
         Log::channel('jaravel')->info('http: ' . json_encode(iterator_to_array($request->headers)));
 
         try {
-            Log::channel('jaravel')->info('http_ctx: ' . serialize($span->getContext()));
-        } catch (\Throwable $e) {
+            Log::channel('jaravel')->info('http_span: ' . $span->getContext()->getSpanId());
+            Log::channel('jaravel')->info('http_parent: ' . $span->getContext()->getParentId());
+        } catch (\Throwable $exception) {
 
         }
 

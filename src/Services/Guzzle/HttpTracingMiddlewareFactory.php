@@ -35,8 +35,9 @@ class HttpTracingMiddlewareFactory
                 Log::channel('jaravel')->info('guzzle: ' . json_encode($headers));
 
                 try {
-                    Log::channel('jaravel')->info('guzzle_ctx: ' . serialize($span->getContext()));
-                } catch (\Throwable $e) {
+                    Log::channel('jaravel')->info('guzzle_span: ' . $span->getContext()->getSpanId());
+                    Log::channel('jaravel')->info('guzzle_parent: ' . $span->getContext()->getParentId());
+                } catch (\Throwable $exception) {
 
                 }
 
