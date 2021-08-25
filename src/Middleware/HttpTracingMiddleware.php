@@ -41,6 +41,7 @@ class HttpTracingMiddleware
         }
 
         Log::channel('jaravel')->info('http: ' . json_encode(iterator_to_array($request->headers)));
+        Log::channel('jaravel')->info('http_full: ' . json_encode($request));
 
         $this->spanCreator->create(
             Caller::call(Config::get('jaravel.http.span_name'), [$request]),
