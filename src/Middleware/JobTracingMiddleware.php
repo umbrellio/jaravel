@@ -27,7 +27,7 @@ class JobTracingMiddleware
         $tracingContextField = self::JOB_TRACING_CONTEXT_FIELD;
         $payload = $job->{$tracingContextField} ?? [];
 
-        Log::channel('jaravel')->info('http: ' . json_encode($payload));
+        Log::channel('jaravel')->info('job: ' . json_encode($payload));
 
         $span = $spanCreator->create(
             Caller::call(Config::get('jaravel.job.span_name'), [$job, $job->job ?? null]),
