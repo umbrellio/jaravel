@@ -34,6 +34,7 @@ class HttpTracingMiddlewareFactory
 
                 Log::channel('jaravel')->info('guzzle: ' . json_encode($headers));
                 Log::channel('jaravel')->info('guzzle_span: ' . $span->getContext()->getSpanId());
+                Log::channel('jaravel')->info('guzzle_parent: ' . $span->getContext()->getParentId());
 
                 foreach ($headers as $name => $value) {
                     $request = $request->withHeader($name, $value);

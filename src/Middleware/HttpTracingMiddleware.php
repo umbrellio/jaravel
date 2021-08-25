@@ -47,7 +47,8 @@ class HttpTracingMiddleware
         );
 
         Log::channel('jaravel')->info('http: ' . json_encode(iterator_to_array($request->headers)));
-        Log::channel('jaravel')->info('http_span: ' . $span->getContext()->getParentId());
+        Log::channel('jaravel')->info('http_span: ' . $span->getContext()->getSpanId()());
+        Log::channel('jaravel')->info('http_parent: ' . $span->getContext()->getParentId());
 
         $response = $next($request);
 
