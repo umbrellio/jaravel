@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Umbrellio\Jaravel\Middleware;
 
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 use OpenTracing\Reference;
 use OpenTracing\Tracer;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,21 +39,11 @@ class HttpTracingMiddleware
             return $next($request);
         }
 
-        $span = $this->spanCreator->create(
+        $this->spanCreator->create(
             Caller::call(Config::get('jaravel.http.span_name'), [$request]),
             iterator_to_array($request->headers),
             Reference::CHILD_OF
         );
-
-
-
-        try {
-            Log::channel('jaravel')->info('http_span: ' . $span->getContext()->getSpanId());
-            Log::channel('jaravel')->info('http_parent: ' . $span->getContext()->getParentId());
-            Log::channel('jaravel')->info('http: ' . json_encode(iterator_to_array($request->headers)));
-        } catch (\Throwable $exception) {
-
-        }
 
         $response = $next($request);
 

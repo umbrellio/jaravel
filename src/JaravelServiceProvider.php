@@ -10,7 +10,6 @@ use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\Facades\Config as ConfigRepository;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Jaeger;
 use Jaeger\Config;
@@ -93,7 +92,7 @@ class JaravelServiceProvider extends ServiceProvider
                 'logging' => true,
                 "local_agent" => [
                     "reporting_host" => ConfigRepository::get('jaravel.agent_host', '127.0.0.1'),
-                    "reporting_port" => 6832,
+                    "reporting_port" => ConfigRepository::get('jaravel.agent_port', 6832),
                 ],
                 'trace_id_header' => ConfigRepository::get('jaravel.trace_id_header', 'X-Trace-Id'),
                 'dispatch_mode' => Config::JAEGER_OVER_BINARY_UDP,

@@ -36,7 +36,10 @@ class SpanCreator
             return $baseOptions;
         }
 
-        $spanContext = $this->tracer->extract(Formats\TEXT_MAP, $carrier);
+        $traceHeaderId = ($carrier['x-trace-id'] ?? null) ? $carrier['x-trace-id'][0] : '';
+
+        $spanContext = $this->tracer->extract(Formats\TEXT_MAP, ['X-Trace-Id' => $traceHeaderId]);
+
         return array_merge(
             $baseOptions,
             $spanContext ? [

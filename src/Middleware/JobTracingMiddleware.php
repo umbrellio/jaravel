@@ -6,7 +6,6 @@ namespace Umbrellio\Jaravel\Middleware;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 use OpenTracing\Reference;
 use OpenTracing\Tracer;
 use Umbrellio\Jaravel\Services\Caller;
@@ -26,8 +25,6 @@ class JobTracingMiddleware
 
         $tracingContextField = self::JOB_TRACING_CONTEXT_FIELD;
         $payload = $job->{$tracingContextField} ?? [];
-
-        Log::channel('jaravel')->info('job: ' . json_encode($payload));
 
         $span = $spanCreator->create(
             Caller::call(Config::get('jaravel.job.span_name'), [$job, $job->job ?? null]),

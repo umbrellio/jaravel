@@ -23,7 +23,7 @@ return [
 
     'agent_host' => env('JARAVEL_AGENT_HOST', '127.0.0.1'),
 
-    'agent_port' => env('JARAVEL_AGENT_PORT', 6831),
+    'agent_port' => env('JARAVEL_AGENT_PORT', 6832),
 
     /**
      * Header name for trace`s id, that will be responded by TraceIdHttpHeaderMiddleware
