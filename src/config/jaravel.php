@@ -28,7 +28,7 @@ return [
     /**
      * Header name for trace`s id, that will be responded by TraceIdHttpHeaderMiddleware
      */
-    'trace_id_header' => env('JARAVEL_TRACE_ID_HEADER', 'X-Trace-Id'),
+    'trace_id_header' => env('JARAVEL_TRACE_ID_HEADER', 'x-trace-id'),
 
     /**
      * Every log in your application will be added to active span, if enabled
