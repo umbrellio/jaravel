@@ -39,7 +39,8 @@ class JobTracingTest extends JaravelTestCase
     public function testJobMiddlewareWithoutContext()
     {
         $job = new TestJob();
-        $middleware = new JobTracingMiddleware();
+
+        $middleware = $this->app->make(JobTracingMiddleware::class);
 
         $middleware->handle($job, fn () => true);
 
@@ -65,9 +66,11 @@ class JobTracingTest extends JaravelTestCase
         $injectionMaker = $this->app->make(JobInjectionMaker::class);
 
         $job = new TestJob();
-        $middleware = new JobTracingMiddleware();
-        $spanCreator = app(SpanCreator::class);
+
         $tracer = $this->app->make(Tracer::class);
+        $spanCreator = $this->app->make(SpanCreator::class);
+
+        $middleware = $this->app->make(JobTracingMiddleware::class);
 
         $spanCreator->create('Call MyService');
         $job = $injectionMaker->injectParentSpanToCommand($job);

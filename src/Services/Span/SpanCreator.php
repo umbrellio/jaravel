@@ -18,15 +18,15 @@ class SpanCreator
         $this->tracer = $tracer;
     }
 
-    public function create(string $operationName, array $carrier = [], ?string $referenceType = null): Span
+    public function create(string $operationName, ?string $traceIdHeader = null, ?string $referenceType = null): Span
     {
         return $this->tracer->startActiveSpan(
             $operationName,
-            $this->detectSpanOptions($carrier, $referenceType)
+            $this->detectSpanOptions($traceIdHeader, $referenceType)
         )->getSpan();
     }
 
-    private function detectSpanOptions(array $carrier, ?string $referenceType): array
+    private function detectSpanOptions(?string $traceIdHeader, ?string $referenceType): array
     {
         $baseOptions = [
             'finish_span_on_close' => true,
@@ -36,9 +36,7 @@ class SpanCreator
             return $baseOptions;
         }
 
-        $traceHeaderId = ($carrier['x-trace-id'] ?? null) ? $carrier['x-trace-id'][0] : '';
-
-        $spanContext = $this->tracer->extract(Formats\TEXT_MAP, ['X-Trace-Id' => $traceHeaderId]);
+        $spanContext = $this->tracer->extract(Formats\TEXT_MAP, ['x-trace-id' => $traceIdHeader]);
 
         return array_merge(
             $baseOptions,

@@ -13,6 +13,7 @@ use Umbrellio\Jaravel\Services\Http\TracingRequestGuard;
 use Umbrellio\Jaravel\Services\Span\ActiveSpanTraceIdRetriever;
 use Umbrellio\Jaravel\Services\Span\SpanCreator;
 use Umbrellio\Jaravel\Services\Span\SpanTagHelper;
+use Umbrellio\Jaravel\Services\TraceIdHeaderRetriever;
 
 class HttpTracingMiddleware
 {
@@ -20,17 +21,20 @@ class HttpTracingMiddleware
     private SpanCreator $spanCreator;
     private TracingRequestGuard $requestGuard;
     private ActiveSpanTraceIdRetriever $activeTraceIdRetriever;
+    private TraceIdHeaderRetriever $traceIdHeaderRetriever;
 
     public function __construct(
         Tracer $tracer,
         SpanCreator $spanCreator,
         TracingRequestGuard $requestGuard,
-        ActiveSpanTraceIdRetriever $activeTraceIdRetriever
+        ActiveSpanTraceIdRetriever $activeTraceIdRetriever,
+        TraceIdHeaderRetriever $traceIdHeaderRetriever
     ) {
         $this->tracer = $tracer;
         $this->spanCreator = $spanCreator;
         $this->requestGuard = $requestGuard;
         $this->activeTraceIdRetriever = $activeTraceIdRetriever;
+        $this->traceIdHeaderRetriever = $traceIdHeaderRetriever;
     }
 
     public function handle($request, callable $next)
@@ -39,9 +43,11 @@ class HttpTracingMiddleware
             return $next($request);
         }
 
+        $traceIdHeader = $this->traceIdHeaderRetriever->retrieve(iterator_to_array($request->headers));
+
         $this->spanCreator->create(
             Caller::call(Config::get('jaravel.http.span_name'), [$request]),
-            iterator_to_array($request->headers),
+            $traceIdHeader,
             Reference::CHILD_OF
         );
 
