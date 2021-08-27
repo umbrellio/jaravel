@@ -39,11 +39,14 @@ abstract class JaravelTestCase extends TestCase
 
     private function jaravelConfiguration(): array
     {
+        $traceHeaderName = 'x-trace-id';
+
         return [
             'enabled' => true,
             'tracer_name' => 'application',
             'agent_host' => '127.0.0.1',
             'agent_port' => 6831,
+            'trace_id_header' => $traceHeaderName,
             'logs_enabled' => true,
 
             'custom_tracer_callable' => fn () => new Tracer(
@@ -53,7 +56,7 @@ abstract class JaravelTestCase extends TestCase
                 true,
                 null,
                 new ScopeManager(),
-                'x-trace-id'
+                $traceHeaderName
             ),
 
             'http' => [
