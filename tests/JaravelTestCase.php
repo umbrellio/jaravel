@@ -44,7 +44,6 @@ abstract class JaravelTestCase extends TestCase
             'tracer_name' => 'application',
             'agent_host' => '127.0.0.1',
             'agent_port' => 6831,
-            'trace_id_header' => 'X-Trace-Id',
             'logs_enabled' => true,
 
             'custom_tracer_callable' => fn () => new Tracer(
@@ -53,7 +52,9 @@ abstract class JaravelTestCase extends TestCase
                 new ConstSampler(),
                 true,
                 null,
-                new ScopeManager()),
+                new ScopeManager(),
+                'x-trace-id'
+            ),
 
             'http' => [
                 'span_name' => fn (Request $request) => 'App: ' . $request->path(),
