@@ -11,23 +11,32 @@ use OpenTracing\Tracer;
 use Umbrellio\Jaravel\Services\Caller;
 use Umbrellio\Jaravel\Services\Span\SpanCreator;
 use Umbrellio\Jaravel\Services\Span\SpanTagHelper;
+use Umbrellio\Jaravel\Services\TraceIdHeaderRetriever;
 
 class JobTracingMiddleware
 {
     public const JOB_TRACING_CONTEXT_FIELD = 'tracingContext';
 
+    private Tracer $tracer;
+    private SpanCreator $spanCreator;
+    private TraceIdHeaderRetriever $traceIdHeaderRetriever;
+
+    public function __construct(Tracer $tracer, SpanCreator $spanCreator, TraceIdHeaderRetriever $traceIdHeaderRetriever)
+    {
+        $this->tracer = $tracer;
+        $this->spanCreator = $spanCreator;
+        $this->traceIdHeaderRetriever = $traceIdHeaderRetriever;
+    }
+
     public function handle($job, callable $next)
     {
-        /** @var Tracer $tracer */
-        $tracer = App::make(Tracer::class);
-        /** @var SpanCreator $spanCreator */
-        $spanCreator = App::make(SpanCreator::class);
+        $payload = $job->{self::JOB_TRACING_CONTEXT_FIELD} ?? [];
 
-        $tracingContextField = self::JOB_TRACING_CONTEXT_FIELD;
-        $payload = $job->{$tracingContextField} ?? [];
-        $span = $spanCreator->create(
+        $traceIdHeader = $this->traceIdHeaderRetriever->retrieve($payload);
+
+        $span = $this->spanCreator->create(
             Caller::call(Config::get('jaravel.job.span_name'), [$job, $job->job ?? null]),
-            $payload,
+            $traceIdHeader,
             Reference::FOLLOWS_FROM
         );
 
@@ -39,8 +48,8 @@ class JobTracingMiddleware
 
         SpanTagHelper::setTags($span, Caller::call($callableConfig, [$job, $job->job ?? null]));
 
-        optional($tracer->getScopeManager()->getActive())
+        optional($this->tracer->getScopeManager()->getActive())
             ->close();
-        $tracer->flush();
+        $this->tracer->flush();
     }
 }

@@ -5,57 +5,66 @@ declare(strict_types=1);
 namespace Umbrellio\Jaravel\Tests;
 
 use GuzzleHttp\Psr7\Request as PsrRequest;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Jaeger\Jaeger;
-use Jaeger\Propagator\JaegerPropagator;
+use Jaeger\Reporter\InMemoryReporter;
 use Jaeger\Sampler\ConstSampler;
 use Jaeger\ScopeManager;
+use Jaeger\Tracer;
 use Orchestra\Testbench\TestCase;
 use Umbrellio\Jaravel\JaravelServiceProvider;
-use Umbrellio\Jaravel\Tests\Utils\SpyReporter;
 
 abstract class JaravelTestCase extends TestCase
 {
-    protected SpyReporter $reporter;
+    protected InMemoryReporter $reporter;
 
     /**
-     * @param \Illuminate\Foundation\Application $app
+     * @param Application $app
      */
     protected function defineEnvironment($app)
     {
-        $this->reporter = new SpyReporter();
-        $app['config']->set('jaravel', $this->jaravelConfiguraton());
+        $this->reporter = new InMemoryReporter();
+        $app['config']->set('jaravel', $this->jaravelConfiguration());
     }
 
+    /**
+     * @param Application $app
+     * @return string[]
+     */
     protected function getPackageProviders($app)
     {
         return [JaravelServiceProvider::class];
     }
 
-    private function jaravelConfiguraton(): array
+    private function jaravelConfiguration(): array
     {
+        $traceHeaderName = 'x-trace-id';
+
         return [
             'enabled' => true,
             'tracer_name' => 'application',
-            'agent_host_port' => '127.0.0.1:6831',
-            'trace_id_header' => 'X-Trace-Id',
+            'agent_host' => '127.0.0.1',
+            'agent_port' => 6831,
+            'trace_id_header' => $traceHeaderName,
             'logs_enabled' => true,
 
-            'custom_tracer_callable' => function () {
-                $jaeger = new Jaeger('test-jaeger', $this->reporter, new ConstSampler(), new ScopeManager());
-
-                $jaeger->setPropagator(new JaegerPropagator());
-
-                return $jaeger;
-            },
+            'custom_tracer_callable' => fn () => new Tracer(
+                'test-tracer',
+                $this->reporter,
+                new ConstSampler(),
+                true,
+                null,
+                new ScopeManager(),
+                $traceHeaderName
+            ),
 
             'http' => [
                 'span_name' => fn (Request $request) => 'App: ' . $request->path(),
                 'tags' => fn (Request $request, Response $response) => [
                     'type' => 'http',
                     'request_host' => $request->getHost(),
-                    'request_path' => $path = $request->path(),
+                    'request_path' => $request->path(),
                     'request_method' => $request->method(),
                     'response_status' => $response->getStatusCode(),
                     'error' => !$response->isSuccessful() && !$response->isRedirection(),

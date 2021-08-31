@@ -11,7 +11,12 @@ use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\Facades\Config as ConfigRepository;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Jaeger;
 use Jaeger\Config;
+use Jaeger\Reporter\InMemoryReporter;
+use Jaeger\Sampler\ConstSampler;
+use Jaeger\ScopeManager;
+use OpenTracing\GlobalTracer;
 use OpenTracing\Tracer;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandFinishedListener;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandStartedListener;
@@ -28,15 +33,36 @@ class JaravelServiceProvider extends ServiceProvider
             $config => base_path('config/jaravel.php'),
         ], 'config');
 
-        $this->configureTracer();
-
         if (!ConfigRepository::get('jaravel.enabled', false)) {
+            $this->configureFakeTracer();
+
             return;
         }
+
+        $this->configureTracer();
 
         $this->listenLogs();
         $this->listenConsoleEvents();
         $this->extendJobsDispatcher();
+    }
+
+    public function configureFakeTracer(): void
+    {
+        $tracer = new class(
+            'fake-tracer',
+            new InMemoryReporter(),
+            new ConstSampler(),
+            true,
+            null,
+            new ScopeManager()) extends \Jaeger\Tracer {
+
+            protected function getHostName()
+            {
+                return null;
+            }
+        };
+
+        $this->app->instance(Tracer::class, $tracer);
     }
 
     public function extendJobsDispatcher(): void
@@ -57,16 +83,25 @@ class JaravelServiceProvider extends ServiceProvider
             return;
         }
 
-        $config = Config::getInstance();
-
-        if (!ConfigRepository::get('jaravel.enabled', false)) {
-            $config->setDisabled(true);
-        }
-
-        $tracer = $config->initTracer(
-            ConfigRepository::get('jaravel.tracer_name', 'application'),
-            ConfigRepository::get('jaravel.agent_host_port', '127.0.0.1:6831')
+        $config = new Config(
+            [
+                'sampler' => [
+                    'type' => Jaeger\SAMPLER_TYPE_CONST,
+                    'param' => true,
+                ],
+                "local_agent" => [
+                    "reporting_host" => ConfigRepository::get('jaravel.agent_host', '127.0.0.1'),
+                    "reporting_port" => ConfigRepository::get('jaravel.agent_port', 6832),
+                ],
+                'trace_id_header' => ConfigRepository::get('jaravel.trace_id_header', 'x-trace-id'),
+                'dispatch_mode' => Config::JAEGER_OVER_BINARY_UDP,
+            ],
+            ConfigRepository::get('jaravel.tracer_name', 'application')
         );
+
+        $config->initializeTracer();
+
+        $tracer = GlobalTracer::get();
 
         $this->app->instance(Tracer::class, $tracer);
     }

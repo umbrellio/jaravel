@@ -7,35 +7,40 @@ namespace Umbrellio\Jaravel\Tests\Feature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
+use Jaeger\Thrift\Agent\Zipkin\BinaryAnnotation;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Umbrellio\Jaravel\Services\ConsoleCommandFilter;
 use Umbrellio\Jaravel\Tests\JaravelTestCase;
 
 class ConsoleTracingTest extends JaravelTestCase
 {
-    public function testConsoleHandledWithTags()
+    public function testConsoleHandledWithTags(): void
     {
         Artisan::command('jaravel:test', fn () => 'OK');
-        $this->artisan('jaravel:test')
-            ->run();
 
-        $spans = $this->reporter->reportedSpans;
+        $this->artisan('jaravel:test')->run();
+
+        $spans = $this->reporter->getSpans();
 
         $this->assertCount(1, $spans);
         $span = $spans[0];
 
-        $this->assertSame('Console: jaravel:test', $span->getOperationName());
-        $this->assertSame([
+        $tags = collect($span->getTags())->mapWithKeys(fn (BinaryAnnotation $tag) => [$tag->key => $tag->value]);
+
+        $expectedTags = [
             'type' => 'console',
             'console_command' => 'jaravel:test',
             'console_exit_code' => 0,
-        ], $span->tags);
+        ];
+
+        $this->assertSame('Console: jaravel:test', $span->getOperationName());
+        $this->assertSame($expectedTags, $tags->intersect($expectedTags)->toArray());
     }
 
     /**
      * @dataProvider provider
      */
-    public function testAllow(array $argv, array $filterCommands, bool $allow)
+    public function testAllow(array $argv, array $filterCommands, bool $allow): void
     {
         $request = new SymfonyRequest([], [], [], [], [], [
             'argv' => $argv,
@@ -48,7 +53,7 @@ class ConsoleTracingTest extends JaravelTestCase
         $this->assertSame($allow, $filter->allow());
     }
 
-    public function provider()
+    public function provider(): array
     {
         return [
             [['artisan', 'horizon:work', '--queue=emails'], ['horizon'], false],
