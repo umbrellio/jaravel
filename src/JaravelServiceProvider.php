@@ -89,7 +89,6 @@ class JaravelServiceProvider extends ServiceProvider
                     'type' => Jaeger\SAMPLER_TYPE_CONST,
                     'param' => true,
                 ],
-                'logging' => true,
                 "local_agent" => [
                     "reporting_host" => ConfigRepository::get('jaravel.agent_host', '127.0.0.1'),
                     "reporting_port" => ConfigRepository::get('jaravel.agent_port', 6832),
