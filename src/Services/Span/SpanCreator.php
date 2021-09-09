@@ -8,7 +8,7 @@ use OpenTracing\Formats;
 use OpenTracing\Reference;
 use OpenTracing\Span;
 use OpenTracing\Tracer;
-use Illuminate\Support\Facades\Config;
+use const Jaeger\TRACE_ID_HEADER;
 
 class SpanCreator
 {
@@ -38,7 +38,7 @@ class SpanCreator
         }
 
         $spanContext = $this->tracer
-            ->extract(Formats\TEXT_MAP, [Config::get('jaravel.trace_id_header', 'x-trace-id') => $traceIdHeader]);
+            ->extract(Formats\TEXT_MAP, [TRACE_ID_HEADER => $traceIdHeader]);
 
         return array_merge(
             $baseOptions,
