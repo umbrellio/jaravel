@@ -2,22 +2,20 @@
 
 namespace Umbrellio\Jaravel\Services;
 
-use Illuminate\Support\Facades\Config;
+use const Jaeger\TRACE_ID_HEADER;
 
 class TraceIdHeaderRetriever
 {
     public function retrieve(array $carrier = []): ?string
     {
-        $headerName = strtolower(Config::get('jaravel.trace_id_header', 'x-trace-id'));
-
-        if (empty($carrier[$headerName])) {
+        if (empty($carrier[TRACE_ID_HEADER])) {
             return null;
         }
 
-        if (is_array($carrier[$headerName])) {
-            return $carrier[$headerName][0];
+        if (is_array($carrier[TRACE_ID_HEADER])) {
+            return $carrier[TRACE_ID_HEADER][0];
         }
 
-        return $carrier[$headerName];
+        return $carrier[TRACE_ID_HEADER];
     }
 }

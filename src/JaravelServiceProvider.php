@@ -93,7 +93,6 @@ class JaravelServiceProvider extends ServiceProvider
                     "reporting_host" => ConfigRepository::get('jaravel.agent_host', '127.0.0.1'),
                     "reporting_port" => ConfigRepository::get('jaravel.agent_port', 6832),
                 ],
-                'trace_id_header' => ConfigRepository::get('jaravel.trace_id_header', 'x-trace-id'),
                 'dispatch_mode' => Config::JAEGER_OVER_BINARY_UDP,
             ],
             ConfigRepository::get('jaravel.tracer_name', 'application')
