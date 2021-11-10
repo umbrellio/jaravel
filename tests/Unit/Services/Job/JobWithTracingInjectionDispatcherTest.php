@@ -74,6 +74,7 @@ class JobWithTracingInjectionDispatcherTest extends TestCase
             ['map', []],
             ['findBatch', 'id'],
             ['batch', []],
+            ['chain', []],
         ];
     }
 }
