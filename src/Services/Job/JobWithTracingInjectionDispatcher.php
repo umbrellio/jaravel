@@ -67,4 +67,9 @@ class JobWithTracingInjectionDispatcher implements QueueingDispatcher
     {
         return $this->dispatcher->batch($jobs);
     }
+
+    public function chain($jobs)
+    {
+        return $this->dispatcher->chain($jobs);
+    }
 }
