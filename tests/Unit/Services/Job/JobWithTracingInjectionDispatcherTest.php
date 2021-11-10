@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Umbrellio\Jaravel\Tests\Unit\Services\Job;
 
-use Illuminate\Contracts\Bus\QueueingDispatcher;
+use Illuminate\Bus\Dispatcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Umbrellio\Jaravel\Services\Job\JobInjectionMaker;
@@ -18,7 +18,7 @@ class JobWithTracingInjectionDispatcherTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->originalDispatcher = $this->createMock(QueueingDispatcher::class);
+        $this->originalDispatcher = $this->createMock(Dispatcher::class);
         $this->jobInjectionMaker = $this->createMock(JobInjectionMaker::class);
         $this->dispatcher = new JobWithTracingInjectionDispatcher($this->originalDispatcher, $this->jobInjectionMaker);
     }
