@@ -39,7 +39,7 @@ return [
      * Describes configuration for incoming Http requests
      */
     'http' => [
-        'span_name' => fn (Request $request) => 'App: ' . $request->path(),
+        'span_name' => Configurations\Http\SpanNameResolver::class,
         'tags' => fn (Request $request, Response $response) => [
             'type' => 'http',
             'request_host' => $request->getHost(),

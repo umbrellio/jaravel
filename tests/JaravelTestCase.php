@@ -13,6 +13,7 @@ use Jaeger\Sampler\ConstSampler;
 use Jaeger\ScopeManager;
 use Jaeger\Tracer;
 use Orchestra\Testbench\TestCase;
+use Umbrellio\Jaravel\Configurations\Http\SpanNameResolver;
 use Umbrellio\Jaravel\JaravelServiceProvider;
 
 abstract class JaravelTestCase extends TestCase
@@ -57,7 +58,7 @@ abstract class JaravelTestCase extends TestCase
             ),
 
             'http' => [
-                'span_name' => fn (Request $request) => 'App: ' . $request->path(),
+                'span_name' => SpanNameResolver::class,
                 'tags' => fn (Request $request, Response $response) => [
                     'type' => 'http',
                     'request_host' => $request->getHost(),

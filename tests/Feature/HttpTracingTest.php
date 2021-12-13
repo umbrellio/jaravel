@@ -34,7 +34,7 @@ class HttpTracingTest extends JaravelTestCase
         $this->assertCount(1, $spans);
         $span = $spans[0];
 
-        $this->assertSame('App: api/jaravel', $span->getOperationName());
+        $this->assertSame('App: test_route', $span->getOperationName());
 
         $tags = collect($span->getTags())->mapWithKeys(fn (BinaryAnnotation $tag) => [$tag->key => $tag->value]);
 
@@ -78,6 +78,7 @@ class HttpTracingTest extends JaravelTestCase
     protected function defineRoutes($router)
     {
         $router->get('/api/jaravel', fn () => 'OK')
-            ->middleware(HttpTracingMiddleware::class);
+            ->middleware(HttpTracingMiddleware::class)
+            ->name('test_route');
     }
 }
