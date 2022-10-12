@@ -4,29 +4,12 @@ declare(strict_types=1);
 
 namespace Umbrellio\Jaravel\Services\Span;
 
-use Jaeger\Span;
-use OpenTracing\Tracer;
+use OpenTelemetry\SDK\Trace\Span;
 
 class ActiveSpanTraceIdRetriever
 {
-    private Tracer $tracer;
-
-    public function __construct(Tracer $tracer)
+    public function retrieve(): string
     {
-        $this->tracer = $tracer;
-    }
-
-    public function retrieve(): ?string
-    {
-        $activeSpan = $this->tracer->getActiveSpan();
-        if (!$activeSpan) {
-            return null;
-        }
-
-        if (!$activeSpan instanceof Span) {
-            return null;
-        }
-
-        return (string)$activeSpan->getContext()->getTraceId();
+        return Span::getCurrent()->getContext()->getTraceId();
     }
 }

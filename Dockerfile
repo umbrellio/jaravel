@@ -1,4 +1,4 @@
-FROM gitlab.task4work.info:4567/common-libs/public-images/php:7.4
+FROM php:7.4
 
 RUN apt-get update && apt-get install -y \
     git zlib1g-dev libicu-dev libc-client-dev libkrb5-dev libgmp-dev libpq-dev libzip-dev unzip

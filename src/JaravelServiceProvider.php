@@ -11,13 +11,14 @@ use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\Facades\Config as ConfigRepository;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
-use Jaeger;
-use Jaeger\Config;
-use Jaeger\Reporter\InMemoryReporter;
-use Jaeger\Sampler\ConstSampler;
-use Jaeger\ScopeManager;
-use OpenTracing\GlobalTracer;
-use OpenTracing\Tracer;
+use OpenTelemetry\API\Trace\NoopTracer;
+use OpenTelemetry\API\Trace\TracerInterface;
+use OpenTelemetry\Contrib\Jaeger\Exporter;
+use OpenTelemetry\SDK\Common\Time\SystemClock;
+use OpenTelemetry\SDK\Common\Util\ShutdownHandler;
+use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
+use OpenTelemetry\SDK\Trace\SpanProcessor\NoopSpanProcessor;
+use OpenTelemetry\SDK\Trace\TracerProvider;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandFinishedListener;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandStartedListener;
 use Umbrellio\Jaravel\Services\ConsoleCommandFilter;
@@ -48,61 +49,35 @@ class JaravelServiceProvider extends ServiceProvider
 
     public function configureFakeTracer(): void
     {
-        $tracer = new class(
-            'fake-tracer',
-            new InMemoryReporter(),
-            new ConstSampler(),
-            true,
-            null,
-            new ScopeManager()) extends \Jaeger\Tracer {
-
-            protected function getHostName()
-            {
-                return null;
-            }
-        };
-
-        $this->app->instance(Tracer::class, $tracer);
+        $this->app->instance(TracerInterface::class, NoopTracer::getInstance());
     }
 
     public function extendJobsDispatcher(): void
     {
         $dispatcher = $this->app->make(Dispatcher::class);
         $this->app->extend(Dispatcher::class, function () use ($dispatcher) {
-            return $this->app->make(JobWithTracingInjectionDispatcher::class, [
-                'dispatcher' => $dispatcher,
-            ]);
+            return $this->app->make(JobWithTracingInjectionDispatcher::class, compact('dispatcher'));
         });
     }
 
     private function configureTracer(): void
     {
         if ($tracerCallable = ConfigRepository::get('jaravel.custom_tracer_callable', null)) {
-            $this->app->singleton(Tracer::class, $tracerCallable);
+            $this->app->singleton(TracerInterface::class, $tracerCallable);
 
             return;
         }
 
-        $config = new Config(
-            [
-                'sampler' => [
-                    'type' => Jaeger\SAMPLER_TYPE_CONST,
-                    'param' => true,
-                ],
-                "local_agent" => [
-                    "reporting_host" => ConfigRepository::get('jaravel.agent_host', '127.0.0.1'),
-                    "reporting_port" => ConfigRepository::get('jaravel.agent_port', 6832),
-                ],
-                'dispatch_mode' => Config::JAEGER_OVER_BINARY_UDP,
-            ],
-            ConfigRepository::get('jaravel.tracer_name', 'application')
-        );
+        $host = ConfigRepository::get('jaravel.agent_host', '127.0.0.1');
+        $port = ConfigRepository::get('jaravel.agent_port', 6832);
+        $tracerName = ConfigRepository::get('jaravel.tracer_name', 'application');
+        $exporter = Exporter::fromConnectionString("{$host}:{$port}", $tracerName);
 
-        $config->initializeTracer();
+        $tracerProvider = new TracerProvider(new BatchSpanProcessor($exporter, new SystemClock()));
+        ShutdownHandler::register([$tracerProvider, 'shutdown']);
+        $tracer = $tracerProvider->getTracer($tracerName);
 
-        $tracer = GlobalTracer::get();
-
-        $this->app->instance(Tracer::class, $tracer);
+        $this->app->instance(TracerInterface::class, $tracer);
     }
 
     private function listenLogs(): void
@@ -112,7 +87,7 @@ class JaravelServiceProvider extends ServiceProvider
         }
 
         Event::listen(MessageLogged::class, function (MessageLogged $e) {
-            $span = $this->app->make(Tracer::class)->getActiveSpan();
+            $span = $this->app->make(TracerInterface::class)->getActiveSpan();
             if (!$span) {
                 return;
             }

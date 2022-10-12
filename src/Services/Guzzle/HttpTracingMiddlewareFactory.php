@@ -11,7 +11,7 @@ use OpenTracing\Tracer;
 use Psr\Http\Message\RequestInterface;
 use Umbrellio\Jaravel\Services\Caller;
 use Umbrellio\Jaravel\Services\Span\SpanCreator;
-use Umbrellio\Jaravel\Services\Span\SpanTagHelper;
+use Umbrellio\Jaravel\Services\Span\SpanAttributeHelper;
 
 class HttpTracingMiddlewareFactory
 {
@@ -29,7 +29,7 @@ class HttpTracingMiddlewareFactory
                 $headers = [];
                 $tracer->inject($span->getContext(), Formats\TEXT_MAP, $headers);
 
-                SpanTagHelper::setTags($span, Caller::call(Config::get('jaravel.guzzle.tags'), [$request]));
+                SpanAttributeHelper::setAttributes($span, Caller::call(Config::get('jaravel.guzzle.tags'), [$request]));
 
                 foreach ($headers as $name => $value) {
                     $request = $request->withHeader($name, $value);

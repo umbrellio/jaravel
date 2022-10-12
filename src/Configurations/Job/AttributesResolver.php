@@ -6,7 +6,7 @@ namespace Umbrellio\Jaravel\Configurations\Job;
 
 use Illuminate\Contracts\Queue\Job;
 
-class TagsResolver
+class AttributesResolver
 {
     public function __invoke($realJob, ?Job $job = null)
     {

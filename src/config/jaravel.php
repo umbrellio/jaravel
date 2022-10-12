@@ -89,6 +89,6 @@ return [
      */
     'guzzle' => [
         'span_name' => Configurations\Guzzle\SpanNameResolver::class,
-        'tags' => Configurations\Guzzle\TagsResolver::class,
+        'tags' => Configurations\Guzzle\AttributesResolver::class,
     ],
 ];

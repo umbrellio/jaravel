@@ -8,7 +8,7 @@ use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Support\Facades\Config;
 use OpenTracing\Tracer;
 use Umbrellio\Jaravel\Services\Caller;
-use Umbrellio\Jaravel\Services\Span\SpanTagHelper;
+use Umbrellio\Jaravel\Services\Span\SpanAttributeHelper;
 
 class ConsoleCommandFinishedListener
 {
@@ -30,7 +30,7 @@ class ConsoleCommandFinishedListener
             'type' => 'console',
         ]);
 
-        SpanTagHelper::setTags(
+        SpanAttributeHelper::setAttributes(
             $span,
             Caller::call($callableConfig, [$event->command, $event->exitCode, $event->input, $event->output])
         );

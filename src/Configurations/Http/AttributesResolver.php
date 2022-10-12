@@ -7,7 +7,7 @@ namespace Umbrellio\Jaravel\Configurations\Http;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class TagsResolver
+class AttributesResolver
 {
     public function __invoke(Request $request, Response $response)
     {

@@ -7,13 +7,13 @@ namespace Umbrellio\Jaravel\Tests\Unit\Configurations\Http;
 use Illuminate\Http\Request;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Umbrellio\Jaravel\Configurations\Http\TagsResolver;
+use Umbrellio\Jaravel\Configurations\Http\AttributesResolver;
 
-class TagsResolverTest extends TestCase
+class AttributesResolverTest extends TestCase
 {
     public function testResolve(): void
     {
-        $resolver = new TagsResolver();
+        $resolver = new AttributesResolver();
         $request = Request::create('https://test.com/api');
         $response = new Response();
 
