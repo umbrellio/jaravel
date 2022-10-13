@@ -17,7 +17,6 @@ use OpenTelemetry\Contrib\Jaeger\Exporter;
 use OpenTelemetry\SDK\Common\Time\SystemClock;
 use OpenTelemetry\SDK\Common\Util\ShutdownHandler;
 use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
-use OpenTelemetry\SDK\Trace\SpanProcessor\NoopSpanProcessor;
 use OpenTelemetry\SDK\Trace\TracerProvider;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandFinishedListener;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandStartedListener;

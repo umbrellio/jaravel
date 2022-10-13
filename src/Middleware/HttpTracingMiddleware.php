@@ -58,7 +58,7 @@ class HttpTracingMiddleware
         $span = Span::getCurrent();
         $scope = $span->activate();
 
-        $callableConfig = Config::get('jaravel.http.tags', fn () => [
+        $callableConfig = Config::get('jaravel.http.attributes', fn () => [
             'type' => 'http',
         ]);
 

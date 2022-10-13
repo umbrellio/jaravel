@@ -37,7 +37,7 @@ class JobTracingMiddleware
 
         $next($job);
 
-        $callableConfig = Config::get('jaravel.job.tags', fn () => [
+        $callableConfig = Config::get('jaravel.job.attributes', fn () => [
             'type' => 'job',
         ]);
 

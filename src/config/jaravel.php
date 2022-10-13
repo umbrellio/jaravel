@@ -40,7 +40,7 @@ return [
      */
     'http' => [
         'span_name' => Configurations\Http\SpanNameResolver::class,
-        'tags' => fn (Request $request, Response $response) => [
+        'attributes' => fn (Request $request, Response $response) => [
             'type' => 'http',
             'request_host' => $request->getHost(),
             'request_path' => $request->path(),
@@ -56,7 +56,7 @@ return [
     'console' => [
         'span_name' => fn (string $command, ?InputInterface $input = null) => 'Console: ' . $command,
         'filter_commands' => ['schedule:run', 'horizon', 'queue:'],
-        'tags' => fn (string $command, int $exitCode, ?InputInterface $input = null, ?OutputInterface $output = null) => [
+        'attributes' => fn (string $command, int $exitCode, ?InputInterface $input = null, ?OutputInterface $output = null) => [
             'type' => 'console',
             'console_command' => $command,
             'console_exit_code' => $exitCode,
@@ -68,7 +68,7 @@ return [
      */
     'job' => [
         'span_name' => fn ($realJob, ?Job $job) => 'Job: ' . get_class($realJob),
-        'tags' => fn ($realJob, ?Job $job) => [
+        'attributes' => fn ($realJob, ?Job $job) => [
             'type' => 'job',
             'job_class' => get_class($realJob),
             'job_id' => optional($job)
@@ -89,6 +89,6 @@ return [
      */
     'guzzle' => [
         'span_name' => Configurations\Guzzle\SpanNameResolver::class,
-        'tags' => Configurations\Guzzle\AttributesResolver::class,
+        'attributes' => Configurations\Guzzle\AttributesResolver::class,
     ],
 ];
