@@ -16,6 +16,7 @@ use OpenTelemetry\API\Trace\TracerInterface;
 use OpenTelemetry\Contrib\Jaeger\Exporter;
 use OpenTelemetry\SDK\Common\Time\SystemClock;
 use OpenTelemetry\SDK\Common\Util\ShutdownHandler;
+use OpenTelemetry\SDK\Trace\Span;
 use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
 use OpenTelemetry\SDK\Trace\TracerProvider;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandFinishedListener;
@@ -86,12 +87,9 @@ class JaravelServiceProvider extends ServiceProvider
         }
 
         Event::listen(MessageLogged::class, function (MessageLogged $e) {
-            $span = $this->app->make(TracerInterface::class)->getActiveSpan();
-            if (!$span) {
-                return;
-            }
+            $span = Span::getCurrent();
 
-            $span->log([
+            $span->addEvent('Log', [
                 'message' => $e->message,
                 'context' => $e->context,
                 'level' => $e->level,

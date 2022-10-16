@@ -21,7 +21,7 @@ return [
      */
     'tracer_name' => env('JARAVEL_TRACER_NAME', 'application'),
 
-    'agent_host' => env('JARAVEL_AGENT_HOST', '127.0.0.1'),
+    'agent_host' => env('JARAVEL_AGENT_HOST', 'http://127.0.0.1'),
 
     'agent_port' => env('JARAVEL_AGENT_PORT', 6832),
 
