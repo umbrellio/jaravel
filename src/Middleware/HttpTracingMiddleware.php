@@ -41,7 +41,9 @@ class HttpTracingMiddleware
 
         logger('Jaravel: Http middleware tracing');
 
-        $traceIdHeader = $this->traceIdHeaderRetriever->retrieve(iterator_to_array($request->headers));
+        $traceIdHeader = $this->traceIdHeaderRetriever->retrieve(iterator_to_array($request->headers), $this->traceIdHeader());
+
+        logger('Jaravel: Http middleware tracing: Trace id header', [$traceIdHeader]);
 
         $this->spanCreator->create(
             Caller::call(Config::get('jaravel.http.span_name'), [$request]),
@@ -77,7 +79,7 @@ class HttpTracingMiddleware
 
     private function addTraceIdToHeaderIfNeeded(Response $response): void
     {
-        $headerName = Config::get('jaravel.trace_id_header', null);
+        $headerName = $this->traceIdHeader();
 
         if (!$headerName) {
             return;
@@ -86,5 +88,10 @@ class HttpTracingMiddleware
         $traceId = $this->activeTraceIdRetriever->retrieve();
 
         $response->headers->set($headerName, $traceId);
+    }
+
+    private function traceIdHeader(): ?string
+    {
+        return Config::get('jaravel.trace_id_header', null);
     }
 }

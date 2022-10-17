@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Umbrellio\Jaravel\Middleware;
 
 use Illuminate\Support\Facades\Config;
+use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
 use Umbrellio\Jaravel\Services\Caller;
 use Umbrellio\Jaravel\Services\Span\SpanCreator;
 use Umbrellio\Jaravel\Services\Span\SpanAttributeHelper;

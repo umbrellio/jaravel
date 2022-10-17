@@ -6,16 +6,20 @@ use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
 
 class TraceIdHeaderRetriever
 {
-    public function retrieve(array $carrier = []): ?string
+    public function retrieve(array $carrier = [], ?string $keyHeader = TraceContextPropagator::TRACEPARENT): ?string
     {
-        if (empty($carrier[TraceContextPropagator::TRACEPARENT])) {
+        if (!$keyHeader) {
+            $keyHeader = TraceContextPropagator::TRACEPARENT;
+        }
+
+        if (empty($carrier[$keyHeader])) {
             return null;
         }
 
-        if (is_array($carrier[TraceContextPropagator::TRACEPARENT])) {
-            return $carrier[TraceContextPropagator::TRACEPARENT][0];
+        if (is_array($carrier[$keyHeader])) {
+            return $carrier[$keyHeader][0];
         }
 
-        return $carrier[TraceContextPropagator::TRACEPARENT];
+        return $carrier[$keyHeader];
     }
 }
