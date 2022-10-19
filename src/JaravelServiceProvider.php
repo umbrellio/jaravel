@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use OpenTelemetry\API\Trace\NoopTracer;
 use OpenTelemetry\API\Trace\TracerInterface;
-use OpenTelemetry\Contrib\Jaeger\Exporter;
+use OpenTelemetry\Contrib\Jaeger\AgentExporter;
 use OpenTelemetry\SDK\Common\Time\SystemClock;
 use OpenTelemetry\SDK\Common\Util\ShutdownHandler;
 use OpenTelemetry\SDK\Trace\Span;
@@ -71,7 +71,7 @@ class JaravelServiceProvider extends ServiceProvider
         $host = ConfigRepository::get('jaravel.agent_host', '127.0.0.1');
         $port = ConfigRepository::get('jaravel.agent_port', 6832);
         $tracerName = ConfigRepository::get('jaravel.tracer_name', 'application');
-        $exporter = Exporter::fromConnectionString("{$host}:{$port}", $tracerName);
+        $exporter = new AgentExporter($tracerName, "{$host}:{$port}");
 
         $tracerProvider = new TracerProvider(new BatchSpanProcessor($exporter, new SystemClock()));
         ShutdownHandler::register([$tracerProvider, 'shutdown']);

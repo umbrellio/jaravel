@@ -25,6 +25,8 @@ class ConsoleCommandFinishedListener
             Caller::call($callableConfig, [$event->command, $event->exitCode, $event->input, $event->output])
         );
 
-        $span->activate()->detach();
+        $scope = $span->activate();
+        $span->end();
+        $scope->detach();
     }
 }
