@@ -48,7 +48,7 @@ class HttpTracingMiddleware
         $this->spanCreator->create(
             Caller::call(Config::get('jaravel.http.span_name'), [$request]),
             $traceIdHeader
-        );
+        )->activate();
 
         /** @var Response $response */
         $response = $next($request);
