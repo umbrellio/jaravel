@@ -18,6 +18,7 @@ use OpenTelemetry\SDK\Common\Time\SystemClock;
 use OpenTelemetry\SDK\Common\Util\ShutdownHandler;
 use OpenTelemetry\SDK\Trace\Span;
 use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
+use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
 use OpenTelemetry\SDK\Trace\TracerProvider;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandFinishedListener;
 use Umbrellio\Jaravel\Listeners\ConsoleCommandStartedListener;
@@ -73,7 +74,7 @@ class JaravelServiceProvider extends ServiceProvider
         $tracerName = ConfigRepository::get('jaravel.tracer_name', 'application');
         $exporter = new AgentExporter($tracerName, "{$host}:{$port}");
 
-        $tracerProvider = new TracerProvider(new BatchSpanProcessor($exporter, new SystemClock()));
+        $tracerProvider = new TracerProvider(new SimpleSpanProcessor($exporter));
         ShutdownHandler::register([$tracerProvider, 'shutdown']);
         $tracer = $tracerProvider->getTracer($tracerName);
 
