@@ -37,7 +37,10 @@ class HttpTracingMiddlewareFactory
 
                 $promise = $handler($request, $options);
 
-                $span->activate()->detach();
+                $scope = $span->activate();
+
+                $span->end();
+                $scope->detach();
 
                 return $promise;
             };
