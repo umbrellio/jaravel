@@ -40,6 +40,8 @@ class HttpTracingMiddlewareFactory
                 optional($tracer->getScopeManager()->getActive())
                     ->close();
 
+                $tracer->flush();
+
                 return $promise;
             };
         };
