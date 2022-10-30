@@ -8,8 +8,14 @@ use OpenTelemetry\SDK\Trace\Span;
 
 class ActiveSpanTraceIdRetriever
 {
-    public function retrieve(): string
+    public function retrieve(): ?string
     {
-        return Span::getCurrent()->getContext()->getTraceId();
+        $span = Span::getCurrent();
+
+        if (!$span->getContext()->isValid()) {
+            return null;
+        }
+
+        return $span->getContext()->getTraceId();
     }
 }

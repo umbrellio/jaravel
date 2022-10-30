@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Umbrellio\Jaravel\Middleware;
 
 use Illuminate\Support\Facades\Config;
-use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
 use Umbrellio\Jaravel\Services\Caller;
 use Umbrellio\Jaravel\Services\Span\SpanCreator;
-use Umbrellio\Jaravel\Services\Span\SpanAttributeHelper;
+use Umbrellio\Jaravel\Services\Span\SpanTagHelper;
 use Umbrellio\Jaravel\Services\TraceIdHeaderRetriever;
 
 class JobTracingMiddleware
@@ -34,17 +33,17 @@ class JobTracingMiddleware
             Caller::call(Config::get('jaravel.job.span_name'), [$job, $job->job ?? null]),
             $traceIdHeader
         );
-        $spanScope = $span->activate();
+        $scope = $span->activate();
 
         $next($job);
 
-        $callableConfig = Config::get('jaravel.job.attributes', fn () => [
+        $callableConfig = Config::get('jaravel.job.tags', fn () => [
             'type' => 'job',
         ]);
 
-        SpanAttributeHelper::setAttributes($span, Caller::call($callableConfig, [$job, $job->job ?? null]));
+        SpanTagHelper::setTags($span, Caller::call($callableConfig, [$job, $job->job ?? null]));
 
         $span->end();
-        $spanScope->detach();
+        $scope->detach();
     }
 }

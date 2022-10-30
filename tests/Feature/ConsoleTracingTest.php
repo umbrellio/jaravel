@@ -7,7 +7,7 @@ namespace Umbrellio\Jaravel\Tests\Feature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
-use Jaeger\Thrift\Agent\Zipkin\BinaryAnnotation;
+use OpenTelemetry\SDK\Trace\ImmutableSpan;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Umbrellio\Jaravel\Services\ConsoleCommandFilter;
 use Umbrellio\Jaravel\Tests\JaravelTestCase;
@@ -23,23 +23,22 @@ class ConsoleTracingTest extends JaravelTestCase
         $spans = $this->reporter->getSpans();
 
         $this->assertCount(1, $spans);
+        /** @var ImmutableSpan $span */
         $span = $spans[0];
-
-        $tags = collect($span->getTags())->mapWithKeys(fn (BinaryAnnotation $tag) => [$tag->key => $tag->value]);
 
         $expectedTags = [
             'type' => 'console',
             'console_command' => 'jaravel:test',
-            'console_exit_code' => 0,
+            'console_exit_code' => '0',
         ];
 
-        $this->assertSame('Console: jaravel:test', $span->getOperationName());
+        $tags = collect($span->getAttributes()->toArray());
+
+        $this->assertSame('Console: jaravel:test', $span->getName());
         $this->assertSame($expectedTags, $tags->intersect($expectedTags)->toArray());
     }
 
-    /**
-     * @dataProvider provider
-     */
+    /** @dataProvider provider */
     public function testAllow(array $argv, array $filterCommands, bool $allow): void
     {
         $request = new SymfonyRequest([], [], [], [], [], [

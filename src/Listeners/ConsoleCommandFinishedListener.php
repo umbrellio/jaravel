@@ -8,24 +8,24 @@ use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Support\Facades\Config;
 use OpenTelemetry\SDK\Trace\Span;
 use Umbrellio\Jaravel\Services\Caller;
-use Umbrellio\Jaravel\Services\Span\SpanAttributeHelper;
+use Umbrellio\Jaravel\Services\Span\SpanTagHelper;
 
 class ConsoleCommandFinishedListener
 {
     public function handle(CommandFinished $event): void
     {
         $span = Span::getCurrent();
+        $scope = $span->activate();
 
-        $callableConfig = Config::get('jaravel.console.attributes', fn () => [
+        $callableConfig = Config::get('jaravel.console.tags', fn () => [
             'type' => 'console',
         ]);
 
-        SpanAttributeHelper::setAttributes(
+        SpanTagHelper::setTags(
             $span,
             Caller::call($callableConfig, [$event->command, $event->exitCode, $event->input, $event->output])
         );
 
-        $scope = $span->activate();
         $span->end();
         $scope->detach();
     }

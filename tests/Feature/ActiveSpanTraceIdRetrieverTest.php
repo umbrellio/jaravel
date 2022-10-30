@@ -4,35 +4,25 @@ declare(strict_types=1);
 
 namespace Umbrellio\Jaravel\Tests\Feature;
 
-use OpenTracing\Tracer;
 use Umbrellio\Jaravel\Services\Span\ActiveSpanTraceIdRetriever;
 use Umbrellio\Jaravel\Services\Span\SpanCreator;
 use Umbrellio\Jaravel\Tests\JaravelTestCase;
 
 class ActiveSpanTraceIdRetrieverTest extends JaravelTestCase
 {
-    private Tracer $tracer;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->tracer = $this->app->make(Tracer::class);
-    }
-
     public function testLogsAddedWhenEnabledOption()
     {
         $spanCreator = $this->app->make(SpanCreator::class);
-        $retriever = new ActiveSpanTraceIdRetriever($this->tracer);
+        $retriever = new ActiveSpanTraceIdRetriever();
 
-        $spanCreator->create('Call MyService');
+        $span = $spanCreator->create('Call MyService');
+
+        $scope = $span->activate();
 
         $retrievedTraceId = $retriever->retrieve();
 
-        optional($this->tracer->getScopeManager()->getActive())
-            ->close();
-
-        $this->tracer->flush();
+        $span->end();
+        $scope->detach();
 
         $spans = $this->reporter->getSpans();
 
@@ -45,7 +35,7 @@ class ActiveSpanTraceIdRetrieverTest extends JaravelTestCase
 
     public function testNullIfNoActiveSpan()
     {
-        $retriever = new ActiveSpanTraceIdRetriever($this->tracer);
+        $retriever = new ActiveSpanTraceIdRetriever();
 
         $retrievedTrace = $retriever->retrieve();
 

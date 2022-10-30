@@ -8,25 +8,24 @@ use GuzzleHttp\Psr7\Request as PsrRequest;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Jaeger\Reporter\InMemoryReporter;
-use Jaeger\Sampler\ConstSampler;
-use Jaeger\ScopeManager;
-use Jaeger\Tracer;
+use OpenTelemetry\SDK\Common\Util\ShutdownHandler;
+use OpenTelemetry\SDK\Trace\SpanExporter\InMemoryExporter;
+use OpenTelemetry\SDK\Trace\SpanExporterInterface;
+use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
+use OpenTelemetry\SDK\Trace\TracerProvider;
 use Orchestra\Testbench\TestCase;
 use Umbrellio\Jaravel\Configurations\Http\SpanNameResolver;
 use Umbrellio\Jaravel\JaravelServiceProvider;
 
 abstract class JaravelTestCase extends TestCase
 {
-    protected InMemoryReporter $reporter;
+    protected InMemoryExporter $reporter;
 
-    /**
-     * @param Application $app
-     */
+    /** @param Application $app */
     protected function defineEnvironment($app)
     {
-        $this->reporter = new InMemoryReporter();
-        $app['config']->set('jaravel', $this->jaravelConfiguration());
+        $this->reporter = new InMemoryExporter();
+        $app['config']->set('jaravel', $this->jaravelConfiguration($this->reporter));
     }
 
     /**
@@ -38,24 +37,20 @@ abstract class JaravelTestCase extends TestCase
         return [JaravelServiceProvider::class];
     }
 
-    private function jaravelConfiguration(): array
+    private function jaravelConfiguration(SpanExporterInterface $exporter): array
     {
+        $tracerProvider = new TracerProvider(new SimpleSpanProcessor($exporter));
+        ShutdownHandler::register([$tracerProvider, 'shutdown']);
+        $tracer = $tracerProvider->getTracer('In memory tracer');
+
         return [
             'enabled' => true,
             'tracer_name' => 'application',
             'agent_host' => '127.0.0.1',
             'agent_port' => 6831,
-            'trace_id_header' => 'X-Trace-Id',
             'logs_enabled' => true,
 
-            'custom_tracer_callable' => fn () => new Tracer(
-                'test-tracer',
-                $this->reporter,
-                new ConstSampler(),
-                true,
-                null,
-                new ScopeManager()
-            ),
+            'custom_tracer_callable' => fn () => $tracer,
 
             'http' => [
                 'span_name' => SpanNameResolver::class,

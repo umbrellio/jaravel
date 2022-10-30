@@ -6,14 +6,14 @@ namespace Umbrellio\Jaravel\Tests\Unit\Configurations\Job;
 
 use Illuminate\Contracts\Queue\Job;
 use PHPUnit\Framework\TestCase;
-use Umbrellio\Jaravel\Configurations\Job\AttributesResolver;
+use Umbrellio\Jaravel\Configurations\Job\TagsResolver;
 use Umbrellio\Jaravel\Tests\Utils\TestJob;
 
-class AttributesResolverTest extends TestCase
+class TagsResolverTest extends TestCase
 {
     public function testResolve(): void
     {
-        $resolver = new AttributesResolver();
+        $resolver = new TagsResolver();
 
         $realJob = new TestJob();
         $stubJob = $this->createMock(Job::class);

@@ -8,7 +8,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use OpenTracing\Tracer;
+use OpenTelemetry\SDK\Trace\ImmutableSpan;
 use Umbrellio\Jaravel\Services\Guzzle\HttpTracingMiddlewareFactory;
 use Umbrellio\Jaravel\Services\Span\SpanCreator;
 use Umbrellio\Jaravel\Tests\JaravelTestCase;
@@ -25,28 +25,30 @@ class GuzzleTracingTest extends JaravelTestCase
             'handler' => $stack,
         ]);
 
+        /** @var SpanCreator $spanCreator */
         $spanCreator = app(SpanCreator::class);
-        $tracer = $this->app->make(Tracer::class);
-        $spanCreator->create('Call MyService');
+
+        $span = $spanCreator->create('Call MyService');
+        $scope = $span->activate();
 
         $client->request('GET', 'https://test.com');
 
-        optional($tracer->getScopeManager()->getActive())
-            ->close();
-        $tracer->flush();
+        $span->end();
+        $scope->detach();
 
         $spans = array_reverse($this->reporter->getSpans());
 
         $this->assertCount(2, $spans);
 
         $serviceSpan = $spans[0];
+        /** @var ImmutableSpan $guzzleSpan */
         $guzzleSpan = $spans[1];
 
-        $this->assertSame('Call MyService', $serviceSpan->getOperationName());
-        $this->assertSame('request test.com', $guzzleSpan->getOperationName());
+        $this->assertSame('Call MyService', $serviceSpan->getName());
+        $this->assertSame('request test.com', $guzzleSpan->getName());
 
         $this->assertSame(
-            $serviceSpan->getContext()->getSpanId(), $guzzleSpan->getContext()->getParentId()
+            $serviceSpan->getContext()->getSpanId(), $guzzleSpan->getParentSpanId()
         );
     }
 }

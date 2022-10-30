@@ -7,7 +7,7 @@ namespace Umbrellio\Jaravel\Configurations\Console;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AttributesResolver
+class TagsResolver
 {
     public function __invoke(
         string $command,

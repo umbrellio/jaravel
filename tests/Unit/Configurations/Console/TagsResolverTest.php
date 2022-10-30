@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Umbrellio\Jaravel\Tests\Unit\Configurations\Console;
 
 use PHPUnit\Framework\TestCase;
-use Umbrellio\Jaravel\Configurations\Console\AttributesResolver;
+use Umbrellio\Jaravel\Configurations\Console\TagsResolver;
 
-class AttributesResolverTest extends TestCase
+class TagsResolverTest extends TestCase
 {
     public function testResolve(): void
     {
-        $resolver = new AttributesResolver();
+        $resolver = new TagsResolver();
 
         $result = $resolver('test_command', 1);
         $this->assertSame([

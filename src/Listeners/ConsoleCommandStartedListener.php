@@ -23,6 +23,6 @@ class ConsoleCommandStartedListener
         $this->spanCreator
             ->create(
                 Caller::call(ConfigRepository::get('jaravel.console.span_name'), [$event->command, $event->input])
-            );
+            )->activate();
     }
 }

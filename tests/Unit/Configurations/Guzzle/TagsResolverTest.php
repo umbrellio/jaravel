@@ -6,13 +6,13 @@ namespace Umbrellio\Jaravel\Tests\Unit\Configurations\Guzzle;
 
 use GuzzleHttp\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Umbrellio\Jaravel\Configurations\Guzzle\AttributesResolver;
+use Umbrellio\Jaravel\Configurations\Guzzle\TagsResolver;
 
-class AttributesResolverTest extends TestCase
+class TagsResolverTest extends TestCase
 {
     public function testResolve(): void
     {
-        $resolver = new AttributesResolver();
+        $resolver = new TagsResolver();
         $request = new Request('post', 'https://test.com', [], 'foo=bar');
 
         $result = $resolver($request);

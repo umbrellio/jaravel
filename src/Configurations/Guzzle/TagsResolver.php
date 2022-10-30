@@ -6,7 +6,7 @@ namespace Umbrellio\Jaravel\Configurations\Guzzle;
 
 use Psr\Http\Message\RequestInterface;
 
-class AttributesResolver
+class TagsResolver
 {
     public function __invoke(RequestInterface $request)
     {

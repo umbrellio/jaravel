@@ -7,44 +7,32 @@ namespace Umbrellio\Jaravel\Tests\Feature;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Config;
-use Jaeger\Thrift\Agent\Zipkin\BinaryAnnotation;
+use OpenTelemetry\SDK\Trace\ImmutableSpan;
 use Umbrellio\Jaravel\Middleware\HttpTracingMiddleware;
 use Umbrellio\Jaravel\Tests\JaravelTestCase;
 
 class HttpTracingTest extends JaravelTestCase
 {
-    public function testHttpResponseWithTraceIdHeader()
-    {
-        $response = $this->get('/api/jaravel');
-        $spans = $this->reporter->getSpans();
-
-        $this->assertCount(1, $spans);
-        $span = $spans[0];
-        $traceId = $span->getContext()
-            ->getTraceId();
-
-        $response->assertHeader('x-trace-id', $traceId);
-    }
-
     public function testHttpHandledWithTags()
     {
         $this->get('/api/jaravel');
         $spans = $this->reporter->getSpans();
 
         $this->assertCount(1, $spans);
+        /** @var ImmutableSpan $span */
         $span = $spans[0];
 
-        $this->assertSame('App: test_route', $span->getOperationName());
+        $this->assertSame('App: test_route', $span->getName());
 
-        $tags = collect($span->getTags())->mapWithKeys(fn (BinaryAnnotation $tag) => [$tag->key => $tag->value]);
+        $tags = collect($span->getAttributes()->toArray());
 
         $expectedTags = [
             'type' => 'http',
             'request_host' => 'localhost',
             'request_path' => 'api/jaravel',
             'request_method' => 'GET',
-            'response_status' => 200,
-            'error' => false,
+            'response_status' => '200',
+            'error' => '',
         ];
 
         $this->assertSame($expectedTags, $tags->intersect($expectedTags)->toArray());
@@ -61,7 +49,6 @@ class HttpTracingTest extends JaravelTestCase
         $this->assertCount(1, $this->reporter->getSpans());
     }
 
-
     public function testDenyRequestOption()
     {
         Config::set('jaravel.http.deny_request', fn (Request $request) => $request->query->has('deny-tracing'));
@@ -72,9 +59,8 @@ class HttpTracingTest extends JaravelTestCase
         $this->get('/api/jaravel');
         $this->assertCount(1, $this->reporter->getSpans());
     }
-    /**
-     * @param Router $router
-     */
+
+    /** @param Router $router */
     protected function defineRoutes($router)
     {
         $router->get('/api/jaravel', fn () => 'OK')

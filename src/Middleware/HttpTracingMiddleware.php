@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Umbrellio\Jaravel\Middleware;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
 use OpenTelemetry\SDK\Trace\Span;
 use Symfony\Component\HttpFoundation\Response;
 use Umbrellio\Jaravel\Services\Caller;
 use Umbrellio\Jaravel\Services\Http\TracingRequestGuard;
 use Umbrellio\Jaravel\Services\Span\ActiveSpanTraceIdRetriever;
 use Umbrellio\Jaravel\Services\Span\SpanCreator;
-use Umbrellio\Jaravel\Services\Span\SpanAttributeHelper;
+use Umbrellio\Jaravel\Services\Span\SpanTagHelper;
 use Umbrellio\Jaravel\Services\TraceIdHeaderRetriever;
 
 class HttpTracingMiddleware
@@ -33,23 +35,25 @@ class HttpTracingMiddleware
         $this->traceIdHeaderRetriever = $traceIdHeaderRetriever;
     }
 
+    /** @param Request $request */
     public function handle($request, callable $next)
     {
         if (!$this->requestGuard->allowRequest($request)) {
             return $next($request);
         }
 
-        $traceIdHeader = $this->traceIdHeaderRetriever->retrieve(iterator_to_array($request->headers), $this->traceIdHeader());
+        $headers = iterator_to_array($request->headers);
+        $traceIdHeader = $this->traceIdHeaderRetriever->retrieve($headers);
+        $traceStateHeader = $this->traceIdHeaderRetriever->retrieve($headers, TraceContextPropagator::TRACESTATE);
 
         $this->spanCreator->create(
             Caller::call(Config::get('jaravel.http.span_name'), [$request]),
-            $traceIdHeader
+            $traceIdHeader,
+            $traceStateHeader
         )->activate();
 
         /** @var Response $response */
         $response = $next($request);
-
-        $this->addTraceIdToHeaderIfNeeded($response);
 
         return $response;
     }
@@ -59,31 +63,13 @@ class HttpTracingMiddleware
         $span = Span::getCurrent();
         $scope = $span->activate();
 
-        $callableConfig = Config::get('jaravel.http.attributes', fn () => [
+        $callableConfig = Config::get('jaravel.http.tags', fn () => [
             'type' => 'http',
         ]);
 
-        SpanAttributeHelper::setAttributes($span, Caller::call($callableConfig, [$request, $response]));
+        SpanTagHelper::setTags($span, Caller::call($callableConfig, [$request, $response]));
 
         $span->end();
         $scope->detach();
-    }
-
-    private function addTraceIdToHeaderIfNeeded(Response $response): void
-    {
-        $headerName = $this->traceIdHeader();
-
-        if (!$headerName) {
-            return;
-        }
-
-        $traceId = $this->activeTraceIdRetriever->retrieve();
-
-        $response->headers->set($headerName, $traceId);
-    }
-
-    private function traceIdHeader(): ?string
-    {
-        return Config::get('jaravel.trace_id_header', null);
     }
 }

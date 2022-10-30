@@ -23,9 +23,7 @@ class JobWithTracingInjectionDispatcherTest extends TestCase
         $this->dispatcher = new JobWithTracingInjectionDispatcher($this->originalDispatcher, $this->jobInjectionMaker);
     }
 
-    /**
-     * @dataProvider provideWrappedMethods
-     */
+    /** @dataProvider provideWrappedMethods */
     public function testWrappedMethods(string $method)
     {
         $command = new \stdClass();
@@ -43,9 +41,7 @@ class JobWithTracingInjectionDispatcherTest extends TestCase
         $this->dispatcher->{$method}($command);
     }
 
-    /**
-     * @dataProvider providePassingMethods
-     */
+    /** @dataProvider providePassingMethods */
     public function testPassingMethods(string $method, $argument): void
     {
         $this->jobInjectionMaker

@@ -19,12 +19,16 @@ class SpanCreator
         $this->contextPropagator = $contextPropagator;
     }
 
-    public function create(string $operationName, ?string $traceIdHeader = null): SpanInterface
+    public function create(string $operationName, ?string $traceIdHeader = null, ?string $traceStateHeader = null): SpanInterface
     {
         $spanBuilder = $this->tracer->spanBuilder($operationName);
 
         if ($traceIdHeader) {
-            $context = $this->contextPropagator->extract([TraceContextPropagator::TRACEPARENT => $traceIdHeader]);
+            $fields = [
+                TraceContextPropagator::TRACEPARENT => $traceIdHeader,
+                TraceContextPropagator::TRACESTATE => $traceStateHeader ?? null,
+            ];
+            $context = $this->contextPropagator->extract($fields);
             $spanBuilder->setParent($context);
         }
 

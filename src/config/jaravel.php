@@ -26,11 +26,6 @@ return [
     'agent_port' => env('JARAVEL_AGENT_PORT', 6832),
 
     /**
-     * Header name for trace`s id, that will be responded by TraceIdHttpHeaderMiddleware
-     */
-    'trace_id_header' => env('JARAVEL_TRACE_ID_HEADER', 'x-trace-id'),
-
-    /**
      * Every log in your application will be added to active span, if enabled
      */
     'logs_enabled' => env('JARAVEL_LOGS_ENABLED', true),
@@ -40,7 +35,7 @@ return [
      */
     'http' => [
         'span_name' => Configurations\Http\SpanNameResolver::class,
-        'attributes' => fn (Request $request, Response $response) => [
+        'tags' => fn (Request $request, Response $response) => [
             'type' => 'http',
             'request_host' => $request->getHost(),
             'request_path' => $request->path(),
@@ -56,7 +51,7 @@ return [
     'console' => [
         'span_name' => fn (string $command, ?InputInterface $input = null) => 'Console: ' . $command,
         'filter_commands' => ['schedule:run', 'horizon', 'queue:'],
-        'attributes' => fn (string $command, int $exitCode, ?InputInterface $input = null, ?OutputInterface $output = null) => [
+        'tags' => fn (string $command, int $exitCode, ?InputInterface $input = null, ?OutputInterface $output = null) => [
             'type' => 'console',
             'console_command' => $command,
             'console_exit_code' => $exitCode,
@@ -68,7 +63,7 @@ return [
      */
     'job' => [
         'span_name' => fn ($realJob, ?Job $job) => 'Job: ' . get_class($realJob),
-        'attributes' => fn ($realJob, ?Job $job) => [
+        'tags' => fn ($realJob, ?Job $job) => [
             'type' => 'job',
             'job_class' => get_class($realJob),
             'job_id' => optional($job)
@@ -89,6 +84,6 @@ return [
      */
     'guzzle' => [
         'span_name' => Configurations\Guzzle\SpanNameResolver::class,
-        'attributes' => Configurations\Guzzle\AttributesResolver::class,
+        'tags' => Configurations\Guzzle\TagsResolver::class,
     ],
 ];

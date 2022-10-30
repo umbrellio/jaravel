@@ -7,11 +7,10 @@ namespace Umbrellio\Jaravel\Services\Guzzle;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
-use OpenTelemetry\Context\Propagation\ArrayAccessGetterSetter;
 use Psr\Http\Message\RequestInterface;
 use Umbrellio\Jaravel\Services\Caller;
 use Umbrellio\Jaravel\Services\Span\SpanCreator;
-use Umbrellio\Jaravel\Services\Span\SpanAttributeHelper;
+use Umbrellio\Jaravel\Services\Span\SpanTagHelper;
 
 class HttpTracingMiddlewareFactory
 {
@@ -27,9 +26,9 @@ class HttpTracingMiddlewareFactory
                 $span = $spanCreator->create(Caller::call(Config::get('jaravel.guzzle.span_name'), [$request]));
 
                 $headers = [];
-                $contextPropagator->inject($headers, ArrayAccessGetterSetter::getInstance());
+                $contextPropagator->inject($headers);
 
-                SpanAttributeHelper::setAttributes($span, Caller::call(Config::get('jaravel.guzzle.attributes'), [$request]));
+                SpanTagHelper::setTags($span, Caller::call(Config::get('jaravel.guzzle.tags'), [$request]));
 
                 foreach ($headers as $name => $value) {
                     $request = $request->withHeader($name, $value);
@@ -37,10 +36,7 @@ class HttpTracingMiddlewareFactory
 
                 $promise = $handler($request, $options);
 
-                $scope = $span->activate();
-
                 $span->end();
-                $scope->detach();
 
                 return $promise;
             };

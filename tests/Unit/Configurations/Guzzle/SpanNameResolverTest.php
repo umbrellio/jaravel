@@ -16,6 +16,6 @@ class SpanNameResolverTest extends TestCase
         $request = new Request('get', 'https://test.com');
 
         $result = $resolver($request);
-        $this->assertSame('request test.com', $result);
+        $this->assertSame('Request https://test.com', $result);
     }
 }

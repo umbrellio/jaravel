@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Umbrellio\Jaravel\Services\Job;
 
 use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
-use OpenTelemetry\Context\Propagation\ArrayAccessGetterSetter;
 use Umbrellio\Jaravel\Middleware\JobTracingMiddleware;
 
 class JobInjectionMaker
@@ -26,7 +25,7 @@ class JobInjectionMaker
         }
 
         $command->{$tracingContextField} = [];
-        $this->contextPropagator->inject($command->{$tracingContextField}, ArrayAccessGetterSetter::getInstance());
+        $this->contextPropagator->inject($command->{$tracingContextField});
 
         return $command;
     }
