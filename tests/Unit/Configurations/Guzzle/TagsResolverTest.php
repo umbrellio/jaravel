@@ -21,6 +21,7 @@ class TagsResolverTest extends TestCase
             'uri' => 'https://test.com',
             'method' => 'POST',
             'body' => 'foo=bar',
+            'headers' => json_encode($request->getHeaders())
         ], $result);
     }
 }
