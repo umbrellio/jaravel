@@ -11,7 +11,8 @@ class SpanNameResolver
     public function __invoke(RequestInterface $request)
     {
         $uri = $request->getUri();
+        $host = $uri->getHost() ?? $uri->getPath();
 
-        return 'Request ' . $uri->getScheme() . '://' . $uri->getHost();
+        return 'Request ' . $uri->getScheme() . '://' . $host;
     }
 }
