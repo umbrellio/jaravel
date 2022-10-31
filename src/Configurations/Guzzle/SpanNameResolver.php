@@ -12,6 +12,6 @@ class SpanNameResolver
     {
         $uri = $request->getUri();
 
-        return 'Request ' . $uri->getScheme() . '://' . $uri->getHost() . $uri->getPath();
+        return 'Request ' . $uri->getScheme() . '://' . $uri->getHost();
     }
 }
