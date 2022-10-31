@@ -16,6 +16,7 @@ class TagsResolver
             'method' => $request->getMethod(),
             'body' => optional($request->getBody())
                 ->getContents(),
+            'headers' => $request->getHeaders()
         ];
     }
 }
