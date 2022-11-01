@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Umbrellio\Jaravel\Services\Span;
 
-use OpenTracing\Span;
+use OpenTelemetry\API\Trace\SpanInterface;
 
 class SpanTagHelper
 {
-    public static function setTags(Span $span, array $tags): void
+    public static function setTags(SpanInterface $span, array $tags): void
     {
         foreach ($tags as $tag => $value) {
-            $span->setTag($tag, $value);
+            $span->setAttribute($tag, (string) $value);
         }
     }
 }

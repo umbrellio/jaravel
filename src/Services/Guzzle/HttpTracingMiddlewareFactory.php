@@ -6,8 +6,7 @@ namespace Umbrellio\Jaravel\Services\Guzzle;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
-use OpenTracing\Formats;
-use OpenTracing\Tracer;
+use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
 use Psr\Http\Message\RequestInterface;
 use Umbrellio\Jaravel\Services\Caller;
 use Umbrellio\Jaravel\Services\Span\SpanCreator;
@@ -19,15 +18,15 @@ class HttpTracingMiddlewareFactory
     {
         return function (callable $handler) {
             return function (RequestInterface $request, array $options) use ($handler) {
-                /** @var Tracer $tracer */
-                $tracer = App::make(Tracer::class);
+                /** @var TraceContextPropagator $contextPropagator */
+                $contextPropagator = App::make(TraceContextPropagator::class);
                 /** @var SpanCreator $spanCreator */
                 $spanCreator = App::make(SpanCreator::class);
 
                 $span = $spanCreator->create(Caller::call(Config::get('jaravel.guzzle.span_name'), [$request]));
 
                 $headers = [];
-                $tracer->inject($span->getContext(), Formats\TEXT_MAP, $headers);
+                $contextPropagator->inject($headers);
 
                 SpanTagHelper::setTags($span, Caller::call(Config::get('jaravel.guzzle.tags'), [$request]));
 
@@ -37,8 +36,7 @@ class HttpTracingMiddlewareFactory
 
                 $promise = $handler($request, $options);
 
-                optional($tracer->getScopeManager()->getActive())
-                    ->close();
+                $span->end();
 
                 return $promise;
             };

@@ -21,14 +21,9 @@ return [
      */
     'tracer_name' => env('JARAVEL_TRACER_NAME', 'application'),
 
-    'agent_host' => env('JARAVEL_AGENT_HOST', '127.0.0.1'),
+    'agent_host' => env('JARAVEL_AGENT_HOST', 'http://127.0.0.1'),
 
     'agent_port' => env('JARAVEL_AGENT_PORT', 6832),
-
-    /**
-     * Header name for trace`s id, that will be responded by TraceIdHttpHeaderMiddleware
-     */
-    'trace_id_header' => env('JARAVEL_TRACE_ID_HEADER', 'x-trace-id'),
 
     /**
      * Every log in your application will be added to active span, if enabled

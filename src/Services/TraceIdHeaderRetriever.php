@@ -2,20 +2,20 @@
 
 namespace Umbrellio\Jaravel\Services;
 
-use const Jaeger\TRACE_ID_HEADER;
+use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
 
 class TraceIdHeaderRetriever
 {
-    public function retrieve(array $carrier = []): ?string
+    public function retrieve(array $carrier, $headerName = TraceContextPropagator::TRACEPARENT): ?string
     {
-        if (empty($carrier[TRACE_ID_HEADER])) {
+        if (empty($carrier[$headerName])) {
             return null;
         }
 
-        if (is_array($carrier[TRACE_ID_HEADER])) {
-            return $carrier[TRACE_ID_HEADER][0];
+        if (is_array($carrier[$headerName])) {
+            return $carrier[$headerName][0];
         }
 
-        return $carrier[TRACE_ID_HEADER];
+        return $carrier[$headerName];
     }
 }

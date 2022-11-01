@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Umbrellio\Jaravel\Services\Job;
 
-use OpenTracing\Formats;
-use OpenTracing\Tracer;
+use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
 use Umbrellio\Jaravel\Middleware\JobTracingMiddleware;
 
 class JobInjectionMaker
 {
-    private Tracer $tracer;
+    private TraceContextPropagator $contextPropagator;
 
-    public function __construct(Tracer $tracer)
+    public function __construct(TraceContextPropagator $contextPropagator)
     {
-        $this->tracer = $tracer;
+        $this->contextPropagator = $contextPropagator;
     }
 
     public function injectParentSpanToCommand(object $command): object
@@ -25,14 +24,8 @@ class JobInjectionMaker
             return $command;
         }
 
-        $span = $this->tracer->getActiveSpan();
-
-        if (!$span) {
-            return $command;
-        }
-
         $command->{$tracingContextField} = [];
-        $this->tracer->inject($span->getContext(), Formats\TEXT_MAP, $command->{$tracingContextField});
+        $this->contextPropagator->inject($command->{$tracingContextField});
 
         return $command;
     }
