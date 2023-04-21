@@ -18,7 +18,8 @@ class ConsoleTracingTest extends JaravelTestCase
     {
         Artisan::command('jaravel:test', fn () => 'OK');
 
-        $this->artisan('jaravel:test')->run();
+        $this->artisan('jaravel:test')
+            ->run();
 
         $spans = $this->reporter->getSpans();
 

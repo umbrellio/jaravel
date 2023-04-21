@@ -47,8 +47,6 @@ class GuzzleTracingTest extends JaravelTestCase
         $this->assertSame('Call MyService', $serviceSpan->getName());
         $this->assertSame('request test.com', $guzzleSpan->getName());
 
-        $this->assertSame(
-            $serviceSpan->getContext()->getSpanId(), $guzzleSpan->getParentSpanId()
-        );
+        $this->assertSame($serviceSpan->getContext() ->getSpanId(), $guzzleSpan->getParentSpanId());
     }
 }

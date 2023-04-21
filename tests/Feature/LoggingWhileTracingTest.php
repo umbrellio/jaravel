@@ -34,6 +34,8 @@ class LoggingWhileTracingTest extends JaravelTestCase
             'message' => 'test log',
             'context' => ['context'],
             'level' => 'info',
-        ], $span->getEvents()[0]->getAttributes()->toArray());
+        ], $span->getEvents()[0]
+            ->getAttributes()
+            ->toArray());
     }
 }
