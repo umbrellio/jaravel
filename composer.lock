@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "06bb4798046cc33bd550f0802d6a0b66",
+    "content-hash": "8333ac34ae68401f7096db1f13cb9f83",
     "packages": [
         {
             "name": "brick/math",
@@ -1904,6 +1904,12 @@
                 "url": "https://github.com/open-telemetry/opentelemetry-php.git",
                 "reference": "0f308492a1372ff90c1d02e698d96d5ac0f3d854"
             },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/open-telemetry/opentelemetry-php/zipball/0f308492a1372ff90c1d02e698d96d5ac0f3d854",
+                "reference": "0f308492a1372ff90c1d02e698d96d5ac0f3d854",
+                "shasum": ""
+            },
             "require": {
                 "cloudevents/sdk-php": "^v1.0.1",
                 "ext-json": "*",
@@ -2011,6 +2017,10 @@
                 "otel",
                 "tracing"
             ],
+            "support": {
+                "source": "https://github.com/open-telemetry/opentelemetry-php/tree/0.0.15",
+                "issues": "https://github.com/open-telemetry/opentelemetry-php/issues"
+            },
             "time": "2022-08-24T12:56:49+00:00"
         },
         {
