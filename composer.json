@@ -9,7 +9,7 @@
     "guzzlehttp/guzzle": "^6.0|^7.0",
     "spatie/macroable": "^1.0",
     "php-http/guzzle7-adapter": "^1.0",
-    "open-telemetry/opentelemetry": "^1.0@beta",
+    "open-telemetry/opentelemetry": "^0.0.15",
     "ext-json": "*"
   },
   "require-dev": {
@@ -21,6 +21,12 @@
     {
       "name": "vetal",
       "email": "vetal@umbrellio.biz"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/open-telemetry/opentelemetry-php.git"
     }
   ],
   "minimum-stability": "dev",
@@ -46,5 +52,10 @@
     "lint": [
       "vendor/bin/ecs check --config ecs.php --fix"
     ]
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
   }
 }
