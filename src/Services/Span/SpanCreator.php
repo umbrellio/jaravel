@@ -23,8 +23,7 @@ class SpanCreator
         string $operationName,
         ?string $traceIdHeader = null,
         ?string $traceStateHeader = null
-    ): SpanInterface
-    {
+    ): SpanInterface {
         $spanBuilder = $this->tracer->spanBuilder($operationName);
 
         if ($traceIdHeader) {
