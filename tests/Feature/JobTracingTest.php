@@ -36,17 +36,19 @@ class JobTracingTest extends JaravelTestCase
 
         $span = $this->spanCreator->create('Call MyService');
 
-        $traceId = $span->getContext()->getTraceId();
+        $traceId = $span->getContext()
+            ->getTraceId();
 
         $bus->dispatch(new TestJob());
 
         $fakeBus->assertDispatched(TestJob::class, function ($job) use ($propagator, $traceId, $tracingContextField) {
             $span = AbstractSpan::fromContext($propagator->extract($job->{$tracingContextField}));
 
-            return $span->getContext()->getTraceId() === $traceId;
+            return $span->getContext()
+                ->getTraceId() === $traceId;
         });
     }
-    
+
     public function testJobMiddlewareWithoutContext()
     {
         $job = new TestJob();
@@ -102,9 +104,6 @@ class JobTracingTest extends JaravelTestCase
         $this->assertSame('Call MyService', $serviceSpan->getName());
         $this->assertSame('Job: Umbrellio\Jaravel\Tests\Utils\TestJob', $jobSpan->getName());
 
-        $this->assertSame(
-            $serviceSpan->getContext()->getSpanId(), $jobSpan->getParentSpanId()
-        );
+        $this->assertSame($serviceSpan->getContext() ->getSpanId(), $jobSpan->getParentSpanId());
     }
-
 }

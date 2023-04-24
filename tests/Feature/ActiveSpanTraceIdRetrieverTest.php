@@ -28,7 +28,8 @@ class ActiveSpanTraceIdRetrieverTest extends JaravelTestCase
 
         $this->assertCount(1, $spans);
         $span = $spans[0];
-        $traceId = $span->getContext()->getTraceId();
+        $traceId = $span->getContext()
+            ->getTraceId();
 
         $this->assertSame($retrievedTraceId, $traceId);
     }

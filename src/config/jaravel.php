@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Umbrellio\Jaravel\Configurations;
 
 return [
-
     /**
      * Enable Jaravel tracing or not. If not, noop tracer will be used.
      */
